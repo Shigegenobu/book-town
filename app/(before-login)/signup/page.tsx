@@ -1,14 +1,16 @@
 'use client';
-import { auth, db } from '@/app/service/firebase';
-import { Button, Container, Grid, Stack, TextField } from '@mui/material';
+import { auth, db, storage } from '@/app/service/firebase';
+import { Avatar, Box, Button, Container, Grid, Stack, TextField } from '@mui/material';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function SignUp() {
   const [name, setName] = useState<string>('');
+  const [userURL, setUserURL] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
@@ -32,11 +34,11 @@ export default function SignUp() {
     try {
       // Firebase Authenticationを使用して、メールとパスワードで新しいユーザーを作成
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      // console.log(userCredential);
 
       // Firebase Authenticationを使用して、ユーザーの表示名を更新
       await updateProfile(userCredential.user, {
         displayName: name,
+        photoURL: userURL,
       });
 
       // ユーザーのFirestoreデータベースに新しいドキュメントを作成
@@ -44,13 +46,13 @@ export default function SignUp() {
       const appUser = {
         id: userCredential.user.uid,
         name: name,
-        photoURL: userCredential.user.photoURL, // 必要に応じてカスタムのphotoURLに更新できます。
+        photoURL: userCredential.user.photoURL,
         email: email,
         createdAt: Date.now(),
       };
       await setDoc(userRef, appUser);
-      console.log(appUser);
       console.log('ユーザーが作成されました');
+      console.log(appUser);
       router.push('/signin');
 
       // フォームのステートをリセット
@@ -58,6 +60,7 @@ export default function SignUp() {
       setEmail('');
       setPassword('');
       setError('');
+      setUserURL('');
     } catch (error: unknown) {
       // ユーザー作成が失敗した場合の処理
       if (isFirebaseAuthError(error)) {
@@ -102,13 +105,56 @@ export default function SignUp() {
     setPassword(e.currentTarget.value);
   };
 
+  const OnFileUploadToFirebase = (e: { target: { files: any } }) => {
+    // console.log(e.target.files[0].name);
+    const file = e.target.files[0];
+    const storageRef = ref(storage, file.name);
+    const uploadImage = uploadBytesResumable(storageRef, file);
+
+    uploadImage.on(
+      'state_changed',
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log('Upload is ' + progress + '% done');
+        // setLoading(true);
+        switch (snapshot.state) {
+          case 'paused':
+            console.log('Upload is paused');
+            break;
+          case 'running':
+            console.log('Upload is running');
+            break;
+        }
+      },
+      (error) => {
+        console.log(error);
+      },
+      () => {
+        // setLoading(false);
+        // setIsUploaded(true);
+        getDownloadURL(uploadImage.snapshot.ref).then((downloadURL) => {
+          console.log('File available at', downloadURL);
+          setUserURL(downloadURL);
+        });
+      }
+    );
+  };
+
   return (
     <>
       <Container maxWidth="md" sx={{ pt: 5 }}>
-        <h2>登録ページ</h2>
+        <h2>新規登録</h2>
         <form onSubmit={handleSubmit}>
           {error && <p style={{ color: 'red' }}>{error}</p>}
           <Stack spacing={2}>
+            <p>イメージ画像（JpegかPngの画像ファイル）</p>
+            <Stack direction="row" justifyContent="flex-start" spacing={2}>
+              <Avatar alt="" src="" />
+              <Button variant="contained">
+                <input type="file" accept=".png, .jpeg, .jpg" onChange={OnFileUploadToFirebase} />
+              </Button>
+            </Stack>
+            <Box>画像を設定しない場合は、デフォルト画像がアイコンになります。</Box>
             <p>名前</p>
             <TextField
               id="name"

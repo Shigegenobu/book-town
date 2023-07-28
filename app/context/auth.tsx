@@ -1,18 +1,17 @@
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
-import { User } from '../types/user';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from '../service/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
+import { UserType } from '../types/UserType';
 
 // コンテクスト用の型を定義
-type UserContextType = User | null | undefined;
+type UserContextType = UserType | null | undefined;
 
 // コンテクストを作成
 const AuthContext = createContext<any>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-
   // 配布したいデータの定義
   const [user, setUser] = useState<UserContextType>();
 
@@ -25,7 +24,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         if (snap.exists()) {
           // ユーザーデータを取得して格納
-          const appUser = (await getDoc(ref)).data() as User;
+          const appUser = (await getDoc(ref)).data() as UserType;
           setUser(appUser);
           console.log('存在しているよ');
         }

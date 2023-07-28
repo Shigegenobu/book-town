@@ -9,6 +9,7 @@ interface IProps {
   session: any;
 }
 
+
 export default function RootLayout({ children }: IProps) {
   return (
     <>

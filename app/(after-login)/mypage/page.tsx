@@ -5,11 +5,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { auth } from '../../service/firebase';
 import { useAuth } from '@/app/context/auth';
-import { useEffect } from 'react';
 
 export default function Mypage() {
   const router = useRouter();
   const { user, setUser } = useAuth();
+  console.log(user);
 
   const handleLogout = () => {
     signOut(auth)
@@ -22,6 +22,7 @@ export default function Mypage() {
         console.log(err.message);
       });
   };
+
 
   return (
     <>
@@ -43,6 +44,14 @@ export default function Mypage() {
           <Typography sx={{ fontWeight: 'bold', color: 'orange' }}>email</Typography>
           <Typography>{user?.email}</Typography>
         </Box>
+        <Box sx={{ my: 3 }}>
+          <Typography sx={{ fontWeight: 'bold', color: 'orange' }}>photoURL</Typography>
+          <Typography>{user?.photoURL}</Typography>
+          <Box sx={{ border: 1, width: '50%' }}>
+            {<img src={user?.photoURL} alt="ユーザーの写真" width='50%' />}
+          </Box>
+        </Box>
+
         <Stack spacing={2}>
           <Link href="./list">
             <Button variant="contained">一覧へ</Button>
