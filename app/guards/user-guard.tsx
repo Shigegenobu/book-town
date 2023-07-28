@@ -1,12 +1,12 @@
 import { ReactNode } from 'react';
 import { useAuth } from '../context/auth';
-import { User } from '../types/user';
 import { useRouter } from 'next/navigation';
 import CircularColor from '../CircularColor';
 import { usePathname } from 'next/navigation';
+import { UserType } from '../types/UserType';
 
 type Props = {
-  children: ((user: User) => ReactNode) | ReactNode;
+  children: ((user: UserType) => ReactNode) | ReactNode;
 };
 
 const UserGuard = ({ children }: Props) => {
@@ -31,7 +31,6 @@ const UserGuard = ({ children }: Props) => {
   if (user === null) {
     return null;
   }
-
 
   if (user === undefined) {
     return (

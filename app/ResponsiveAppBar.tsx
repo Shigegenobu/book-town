@@ -12,6 +12,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
+import { useAuth } from './context/auth';
 
 const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -20,6 +21,7 @@ function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
+  const user = useAuth();
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -129,8 +131,18 @@ function ResponsiveAppBar() {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                {/* {user?.photoURL ? (
+                  <Avatar alt="Smile" src={user?.photoURL} />
+                ) : (
+                  <Avatar alt="Default" src="/path/to/default-image.jpg" />
+                )} */}
                 {/* <Avatar alt="Smile" src="/image/iviv_d4w2_210527.jpg" /> */}
-                <Avatar alt="Mayu" src="/image/1C25B8E8-FDF5-4710-BD3A-90D08BB11ADA_1_105_c.jpeg" />
+                {/* <Avatar src="" alt="" /> */}
+                <Avatar>
+                  <img src={user?.photoURL} alt="" />
+                </Avatar>
+                {/* <Avatar alt="" src="" /> */}
+                {/* <Avatar alt="Mayu" src="/image/1C25B8E8-FDF5-4710-BD3A-90D08BB11ADA_1_105_c.jpeg" /> */}
               </IconButton>
             </Tooltip>
             <Menu
