@@ -23,7 +23,6 @@ export default function Mypage() {
       });
   };
 
-
   return (
     <>
       <Box>Mypage</Box>
@@ -48,7 +47,7 @@ export default function Mypage() {
           <Typography sx={{ fontWeight: 'bold', color: 'orange' }}>photoURL</Typography>
           <Typography>{user?.photoURL}</Typography>
           <Box sx={{ border: 1, width: '50%' }}>
-            {<img src={user?.photoURL} alt="ユーザーの写真" width='50%' />}
+            {<img src={user?.photoURL} alt="ユーザーの写真" width="50%" />}
           </Box>
         </Box>
 
