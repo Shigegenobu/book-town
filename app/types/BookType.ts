@@ -3,6 +3,6 @@ export type BookType = {
   author: string;
   category: string;
   point: string;
-  id: number;
+  id: string;
   picture:string
 };
