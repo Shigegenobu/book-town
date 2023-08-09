@@ -1,4 +1,6 @@
 'use client';
+import { db } from '@/app/service/firebase';
+import { BookType } from '@/app/types/BookType';
 import {
   Box,
   Button,
@@ -11,9 +13,74 @@ import {
   Stack,
   TextField,
 } from '@mui/material';
+import { collection, doc, getDoc, getDocs, onSnapshot } from 'firebase/firestore';
 import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function BookEdit() {
+  const [bookId, setBookId] = useState<BookType[]>([]);
+
+  // useEffect(() => {
+  //   // firebaseからデータを取得
+  //   const bookData = collection(db, 'books');
+  //   getDocs(bookData).then((snapShot) => {
+  //     const fetchedBooks = snapShot.docs.map((doc) => {
+  //       const data = doc.data();
+  //       return {
+  //         id: doc.id,
+  //         title: data.title,
+  //         author: data.author,
+  //         category: data.category,
+  //         point: data.point,
+  //         picture: data.picture,
+  //       };
+  //     });
+  //     // console.log(fetchedBooks);
+  //     setBookId(fetchedBooks);
+  //   });
+  //   // リアルタイムで取得
+  //   const unsubscribe = onSnapshot(bookData, (book) => {
+  //     const updatedBooks = book.docs.map((doc) => {
+  //       const data = doc.data();
+  //       return {
+  //         id: doc.id,
+  //         title: data.title,
+  //         author: data.author,
+  //         category: data.category,
+  //         point: data.point,
+  //         picture: data.picture,
+  //       };
+  //     });
+  //     setBookId(updatedBooks);
+  //   });
+
+  //   return () => unsubscribe();
+  // }, []);
+
+  // useEffect(() => {
+  //   console.log(bookId);
+  // }, [bookId]);
+
+  // const router = useRouter();
+  // const [isRouterReady, setIsRouterReady] = useState(false);
+
+  // useEffect(() => {
+  //   if (router.isReady) {
+  //     setIsRouterReady(true);
+  //   }
+  // }, [router]);
+
+  // useEffect(() => {
+  //   if (isRouterReady) {
+  //     const docRef = doc(db, "books", router.query.id);
+  //     const docSnap = getDoc(docRef);
+  //     docSnap.then((ref) => {
+  //       setBookId(ref.data());
+  //     });
+  //   }
+  // }, [isRouterReady, router.query.id]);
+
   return (
     <>
       <Box>
@@ -47,8 +114,8 @@ export default function BookEdit() {
 
           <Grid container justifyContent="space-between" spacing={2} mt={2}>
             <Grid item xs={2}>
-              <Link href="./bookshow">
-                <Button variant="contained">詳細ページへ戻る</Button>
+              <Link href="./list">
+                <Button variant="contained">リストへ戻る</Button>
               </Link>
             </Grid>
 

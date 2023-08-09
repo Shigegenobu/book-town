@@ -9,7 +9,7 @@ import { useAuth } from '@/app/context/auth';
 export default function Mypage() {
   const router = useRouter();
   const { user, setUser } = useAuth();
-  console.log(user);
+  // console.log(user);
 
   const handleLogout = () => {
     signOut(auth)
