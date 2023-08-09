@@ -13,6 +13,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { useAuth } from './context/auth';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -21,8 +22,9 @@ function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
+
   const user = useAuth();
-  console.log(user)
+  // console.log(user);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -59,7 +61,7 @@ function ResponsiveAppBar() {
               textDecoration: 'none',
             }}
           >
-            LOGO
+            マイページ
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -132,18 +134,14 @@ function ResponsiveAppBar() {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                {/* {user?.photoURL ? (
-                  <Avatar alt="Smile" src={user?.photoURL} />
-                ) : (
-                  <Avatar alt="Default" src="/path/to/default-image.jpg" />
-                )} */}
-                {/* <Avatar alt="Smile" src="/image/iviv_d4w2_210527.jpg" /> */}
-                {/* <Avatar src="" alt="" /> */}
-                <Avatar>
-                  <img src={user?.photoURL} alt="" />
-                </Avatar>
-                {/* <Avatar alt="" src="" /> */}
-                {/* <Avatar alt="Mayu" src="/image/1C25B8E8-FDF5-4710-BD3A-90D08BB11ADA_1_105_c.jpeg" /> */}
+                {/* {user?.photoURL ? ( */}
+                {/* <Avatar alt="" src={user?.photoURL} /> */}
+                {/* ) : ( */}
+                {/* <Avatar alt="Default" src="/path/to/default-image.jpg" /> */}
+                {/* )} */}
+                {/* <Avatar alt="Smile" src="/UserImage/iviv_d4w2_210527.jpg" /> */}
+                <Avatar src="" alt="" />
+                {/* <Avatar src={user?.photoURL || '/UserImage / images.png'} alt="" /> */}
               </IconButton>
             </Tooltip>
             <Menu

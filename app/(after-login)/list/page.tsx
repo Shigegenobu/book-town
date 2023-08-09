@@ -75,9 +75,9 @@ export default function List() {
       <Box>
         <Grid container justifyContent="space-between" spacing={2} mt={2}>
           <Grid item>
-            <Link href="./bookshow/">
+            {/* <Link href="./bookshow/">
               <Button variant="contained">詳細ページへ</Button>
-            </Link>
+            </Link> */}
           </Grid>
           <Grid item>
             <Link href="./create/">
@@ -91,13 +91,15 @@ export default function List() {
         <Grid container spacing={2} justifyContent="center">
           {books.map((book) => (
             <Grid item xs={12} sm={6} md={4} key={book.id}>
-              <Box border="1px solid #ccc" borderRadius="5px" padding="10px" marginBottom="10px">
-                {/* <TextField value={book.picture} /> */}
-                {book.picture && (
-                  <img src={book.picture} alt="本の写真" width="100%" height="50%" />
-                )}
-                <Typography variant="h5">{book.title}</Typography>
-              </Box>
+              <Link href={`/${book.id}/`} style={{textDecoration: 'none' ,color:'black'}} >
+                <Box border="1px solid #ccc" borderRadius="5px" padding="10px" marginBottom="10px"  >
+                  {book.picture && (
+                    <img src={book.picture} alt="本の写真" width="100%" height="50%" />
+                  )}
+                  <Typography>タイトル：「{book.title}」</Typography>
+                  {/* <Typography variant="h5">タイトル：「{book.title}」</Typography> */}
+                </Box>
+              </Link>
             </Grid>
           ))}
         </Grid>
