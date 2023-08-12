@@ -1,4 +1,5 @@
 'use client';
+import { useAuth } from '@/app/context/auth';
 import { db } from '@/app/service/firebase';
 import { BookType } from '@/app/types/BookType';
 import {
@@ -10,119 +11,198 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  SelectChangeEvent,
   Stack,
   TextField,
+  Typography,
 } from '@mui/material';
-import { collection, doc, getDoc, getDocs, onSnapshot } from 'firebase/firestore';
+import { collection, doc, getDocs, onSnapshot, updateDoc } from 'firebase/firestore';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { ChangeEvent, useEffect, useState } from 'react';
 
-export default function BookEdit() {
-  const [bookId, setBookId] = useState<BookType[]>([]);
+// export default function BookEdit({params,searchParams}:{params:string,searchParams:{id:string}}) {
+export default function BookEdit({ searchParams }: { searchParams: { id: string } }) {
+  const [editBooks, setEditBooks] = useState<BookType[]>([]);
+  const [newTitle, setNewTitle] = useState('');
+  const [newAuthor, setNewAuthor] = useState('');
+  const [newCategory, setNewCategory] = useState('');
+  const [newPoint, setNewPoint] = useState('');
 
-  // useEffect(() => {
-  //   // firebaseからデータを取得
-  //   const bookData = collection(db, 'books');
-  //   getDocs(bookData).then((snapShot) => {
-  //     const fetchedBooks = snapShot.docs.map((doc) => {
-  //       const data = doc.data();
-  //       return {
-  //         id: doc.id,
-  //         title: data.title,
-  //         author: data.author,
-  //         category: data.category,
-  //         point: data.point,
-  //         picture: data.picture,
-  //       };
-  //     });
-  //     // console.log(fetchedBooks);
-  //     setBookId(fetchedBooks);
-  //   });
-  //   // リアルタイムで取得
-  //   const unsubscribe = onSnapshot(bookData, (book) => {
-  //     const updatedBooks = book.docs.map((doc) => {
-  //       const data = doc.data();
-  //       return {
-  //         id: doc.id,
-  //         title: data.title,
-  //         author: data.author,
-  //         category: data.category,
-  //         point: data.point,
-  //         picture: data.picture,
-  //       };
-  //     });
-  //     setBookId(updatedBooks);
-  //   });
+  const router = useRouter();
+  const bookId = searchParams.id;
+  // console.log(searchParams);
+  console.log(bookId);
 
-  //   return () => unsubscribe();
-  // }, []);
+  const handleEditTitleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    // console.log(e.target.value);
+    setNewTitle(e.target.value);
+  };
 
-  // useEffect(() => {
-  //   console.log(bookId);
-  // }, [bookId]);
+  const handleEditAuthorChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    // console.log(e.target.value);
+    setNewAuthor(e.target.value);
+  };
 
-  // const router = useRouter();
-  // const [isRouterReady, setIsRouterReady] = useState(false);
+  const handleEditCategoryChange = (e: SelectChangeEvent<string>) => {
+    // console.log(e.target.value);
+    setNewCategory(e.target.value);
+  };
 
-  // useEffect(() => {
-  //   if (router.isReady) {
-  //     setIsRouterReady(true);
-  //   }
-  // }, [router]);
+  const handleEditPointChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setNewPoint(e.target.value);
+  };
 
-  // useEffect(() => {
-  //   if (isRouterReady) {
-  //     const docRef = doc(db, "books", router.query.id);
-  //     const docSnap = getDoc(docRef);
-  //     docSnap.then((ref) => {
-  //       setBookId(ref.data());
-  //     });
-  //   }
-  // }, [isRouterReady, router.query.id]);
+  const bookToEdit = editBooks.find((editBook) => editBook.id === bookId);
+  // console.log(bookToEdit);
+
+  useEffect(() => {
+    // firebaseからデータを取得
+    const bookData = collection(db, 'books');
+    getDocs(bookData).then((snapShot) => {
+      const fetchedBooks = snapShot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          title: data.title,
+          author: data.author,
+          category: data.category,
+          point: data.point,
+          picture: data.picture,
+        };
+      });
+      // console.log(fetchedBooks);
+      setEditBooks(fetchedBooks);
+    });
+    // リアルタイムで取得
+    const unsubscribe = onSnapshot(bookData, (book) => {
+      const updatedBooks = book.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          title: data.title,
+          author: data.author,
+          category: data.category,
+          point: data.point,
+          picture: data.picture,
+        };
+      });
+      setEditBooks(updatedBooks);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    setNewTitle(bookToEdit?.title || '');
+    setNewAuthor(bookToEdit?.author || '');
+    setNewCategory(bookToEdit?.category || '');
+    setNewPoint(bookToEdit?.point || '');
+  }, [editBooks]);
+
+  const handleSaveClick = async () => {
+    if (!newTitle || !newAuthor || !newCategory || !newPoint) {
+      alert('「タイトルor著者orジャンルor⭐️おすすめポイント⭐️」が未入力です。');
+    }
+
+    try {
+      const newDocRef = doc(db, 'books', bookId);
+      await updateDoc(newDocRef, {
+        title: newTitle,
+        author: newAuthor,
+        category: newCategory,
+        point: newPoint,
+      });
+      console.log('更新されました');
+      router.push('/list');
+    } catch (error) {
+      console.log('保存に失敗しました');
+    }
+  };
 
   return (
     <>
       <Box>
         <Box>編集ページ</Box>
         <Container>
-          <Stack spacing={2}>
-            <TextField label="タイトルを入力して下さい" variant="standard" autoComplete="off" />
-            <TextField label="作者を入力して下さい" variant="standard" autoComplete="off" />
-            <TextField label="出版社を入力して下さい" variant="standard" autoComplete="off" />
-            <FormControl>
-              <InputLabel>ジャンルを選択してください</InputLabel>
-              <Select label="Category" variant="standard">
-                <MenuItem value="ミステリー（推理小説）">ミステリー（推理小説）</MenuItem>
-                <MenuItem value="ファンタジー">ファンタジー</MenuItem>
-                <MenuItem value="歴史小説">歴史小説</MenuItem>
-                <MenuItem value="短編小説">短編小説</MenuItem>
-                <MenuItem value="ノンフィクション">ノンフィクション</MenuItem>
-                <MenuItem value="図鑑">図鑑</MenuItem>
-                <MenuItem value="エッセイ（随筆）">エッセイ（随筆）</MenuItem>
-                <MenuItem value="その他">その他</MenuItem>
-              </Select>
-            </FormControl>
-          </Stack>
+          <Grid container spacing={2} mt={10}>
+            {/* <Grid item xs={4}>
+              <h2>画像アップローダー</h2>
+              <p>JpegかPngの画像ファイル</p>
+              <Box>
+                <Button variant="contained">
+                  ファイルを選択
+                  <input
+                    type="file"
+                    accept=".png, .jpeg, .jpg"
+                    // onChange={OnFileUploadToFirebase}
+                  />
+                </Button>
+              </Box>
+            </Grid> */}
+            <Grid item xs={8}>
+              <Stack spacing={2}>
+                <Typography>タイトル</Typography>
+                <TextField
+                  variant="outlined"
+                  autoComplete="off"
+                  value={newTitle}
+                  onChange={(e) => handleEditTitleChange(e)}
+                />
 
+                <Typography>著者</Typography>
+                <TextField
+                  variant="outlined"
+                  autoComplete="off"
+                  value={newAuthor}
+                  onChange={(e) => handleEditAuthorChange(e)}
+                />
+
+                <FormControl>
+                  <Typography>ジャンル</Typography>
+
+                  <Select
+                    label="Category"
+                    variant="outlined"
+                    value={newCategory}
+                    onChange={(e) => handleEditCategoryChange(e)}
+                  >
+                    <MenuItem value="文学・文芸">文学・文芸</MenuItem>
+                    <MenuItem value="ビジネス">ビジネス</MenuItem>
+                    <MenuItem value="趣味・実用">趣味・実用</MenuItem>
+                    <MenuItem value="専門書">専門書</MenuItem>
+                    <MenuItem value="学習参考書">学習参考書</MenuItem>
+                    <MenuItem value="絵本">絵本</MenuItem>
+                    <MenuItem value="コミックス">コミックス</MenuItem>
+                    <MenuItem value="雑誌">雑誌</MenuItem>
+                  </Select>
+                </FormControl>
+              </Stack>
+            </Grid>
+          </Grid>
           <Box sx={{ mt: 5 }}>
             <Stack spacing={1}>
               <Box>⭐️おすすめポイント⭐️</Box>
-              <TextField multiline rows={4} autoComplete="off" />
+              <TextField
+                multiline
+                rows={4}
+                autoComplete="off"
+                value={newPoint}
+                onChange={(e) => handleEditPointChange(e)}
+              />
             </Stack>
           </Box>
 
           <Grid container justifyContent="space-between" spacing={2} mt={2}>
             <Grid item xs={2}>
               <Link href="./list">
-                <Button variant="contained">リストへ戻る</Button>
+                <Button variant="contained">一覧に戻る</Button>
               </Link>
             </Grid>
 
             <Grid item xs={1}>
-              <Link href="./list">
-                <Button variant="contained">保存</Button>
-              </Link>
+              <Button variant="contained" onClick={handleSaveClick}>
+                編集保存
+              </Button>
             </Grid>
           </Grid>
         </Container>

@@ -153,8 +153,6 @@ export default function Create() {
     router.push('./list');
   };
 
-  // const handleTitleEditChange = () => {};
-
   useEffect(() => {
     //データを取得
     const booksCollectionRef = collection(db, 'books');
@@ -270,26 +268,6 @@ export default function Create() {
               リセット
             </Button>
           </Box>
-          {/* {book.title && (
-            <li key={book.id}>
-              <Box>タイトル</Box>
-              <TextField
-                autoComplete="off"
-                value={book.title}
-                // onChange={() => handleTitleEditChange()}
-              />
-              <Box>著者</Box>
-              <TextField value={book.author} />
-              <Box>ジャンル</Box>
-              <TextField value={book.category} />
-              <Box>おすすめポイント</Box>
-              <TextField value={book.point} />
-              <Box>本の写真</Box>
-              <TextField value={book.picture} />
-              {book.picture && <img src={book.picture} alt="本の写真" width="25%" />}
-            </li>
-          )} */}
-
           <Link href="./list">一覧へ</Link>
         </>
         {/* )} */}
