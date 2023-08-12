@@ -10,12 +10,23 @@ import { useParams } from 'next/navigation';
 export default function BookShow() {
   const [books, setBooks] = useState<BookType[]>([]);
 
+  // const router =useRouter()
+  // console.log(router)
   const params = useParams();
+  console.log(params);
   const bookId = params.id;
   console.log(bookId);
 
+  // const pathname = usePathname()
+  // const searchParams = useSearchParams()
+  // console.log(pathname)
+  // console.log(searchParams)
+
+  // const pathname = usePathname()
+  // console.log(pathname)
+
   const bookToShow = books.find((book) => book.id === bookId);
-  console.log(bookToShow);
+  // console.log(bookToShow);
 
   useEffect(() => {
     // firebaseからデータを取得
@@ -55,7 +66,7 @@ export default function BookShow() {
   }, []);
 
   useEffect(() => {
-    console.log(books);
+    // console.log(books);
   }, [books]);
 
   return (
@@ -76,7 +87,7 @@ export default function BookShow() {
           <Grid container justifyContent="space-between" spacing={2} mt={2}>
             <Grid item xs={3}>
               <Link href="./list">
-                <Button variant="contained">リストページへ</Button>
+                <Button variant="contained">一覧へ</Button>
               </Link>
             </Grid>
             {/* <Grid item xs={3}>
@@ -85,15 +96,12 @@ export default function BookShow() {
               </Link>
             </Grid> */}
             <Grid item xs={2}>
-              <Link href={`/bookedit? id=${bookId}/`}>
+              <Link href={`/bookedit?id=${bookId}`}>
                 <Button variant="contained">編集ページへ</Button>
               </Link>
             </Grid>
           </Grid>
         </Container>
-        <Link href="./list">
-          <Button variant="contained">一覧へ</Button>
-        </Link>
       </Box>
     </>
   );

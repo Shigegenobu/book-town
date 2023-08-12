@@ -91,8 +91,8 @@ export default function List() {
         <Grid container spacing={2} justifyContent="center">
           {books.map((book) => (
             <Grid item xs={12} sm={6} md={4} key={book.id}>
-              <Link href={`/${book.id}/`} style={{textDecoration: 'none' ,color:'black'}} >
-                <Box border="1px solid #ccc" borderRadius="5px" padding="10px" marginBottom="10px"  >
+              <Link href={`/${book.id}/`} style={{ textDecoration: 'none', color: 'black' }}>
+                <Box border="1px solid #ccc" borderRadius="5px" padding="10px" marginBottom="10px">
                   {book.picture && (
                     <img src={book.picture} alt="本の写真" width="100%" height="50%" />
                   )}
