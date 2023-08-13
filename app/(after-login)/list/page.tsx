@@ -56,8 +56,8 @@ export default function List() {
   return (
     <>
       <Container>
-        <Box>
-          <Box>この部分に投稿された内容が入る予定</Box>
+        <h1>このページに投稿された内容が入る予定</h1>
+        {/* <Box>
           <Stack spacing={2}>
             <TextField label="タイトル入力欄" variant="standard" autoComplete="off" />
             <TextField label="作者を入力欄" variant="standard" autoComplete="off" />
@@ -70,72 +70,46 @@ export default function List() {
           <Box>
             <MenuBookTwoToneIcon />
           </Box>
-        </Box>
-      </Container>
-      <Box>
-        <Grid container justifyContent="space-between" spacing={2} mt={2}>
-          <Grid item>
-            {/* <Link href="./bookshow/">
+        </Box> */}
+        <Box>
+          <Grid container justifyContent="space-between" spacing={2} mt={2}>
+            <Grid item>
+              {/* <Link href="./bookshow/">
               <Button variant="contained">詳細ページへ</Button>
             </Link> */}
-          </Grid>
-          <Grid item>
-            <Link href="./create/">
-              <Button variant="contained">投稿する</Button>
-            </Link>
-          </Grid>
-        </Grid>
-      </Box>
-
-      <ul>
-        <Grid container spacing={2} justifyContent="center">
-          {books.map((book) => (
-            <Grid item xs={12} sm={6} md={4} key={book.id}>
-              <Link href={`/${book.id}/`} style={{ textDecoration: 'none', color: 'black' }}>
-                <Box border="1px solid #ccc" borderRadius="5px" padding="10px" marginBottom="10px">
-                  {book.picture && (
-                    <img src={book.picture} alt="本の写真" width="100%" height="50%" />
-                  )}
-                  <Typography>タイトル：「{book.title}」</Typography>
-                  {/* <Typography variant="h5">タイトル：「{book.title}」</Typography> */}
-                </Box>
+            </Grid>
+            <Grid item>
+              <Link href="./create/">
+                <Button variant="contained" size="large" color="warning">
+                  投稿する
+                </Button>
               </Link>
             </Grid>
-          ))}
-        </Grid>
-      </ul>
-      {/* <ul>
-        <Grid container spacing={2} justifyContent="center">
-          {books.map((book) => (
-            <Grid item xs={12} sm={6} md={4} key={book.id}>
-              <Box
-                border="1px solid #ccc"
-                borderRadius="5px"
-                padding="10px"
-                marginBottom="10px"
-              >
-                <Box>タイトル</Box>
-                <TextField
-                  // label="タイトルを入力して下さい"
-                  // variant="standard"
-                  autoComplete="off"
-                  value={book.title}
-                  // onChange={() => handleTitleEditChange()}
-                />
-                <Box>著者</Box>
-                <TextField value={book.author} />
-                <Box>ジャンル</Box>
-                <TextField value={book.category} />
-                <Box>おすすめポイント</Box>
-                <TextField value={book.point} />
-                <Box>本の写真</Box>
-                <TextField value={book.picture} />
-                {book.picture && <img src={book.picture} alt="本の写真" width="100%" />}
-              </Box>
-            </Grid>
-          ))}
-        </Grid>
-      </ul> */}
+          </Grid>
+        </Box>
+
+        <ul>
+          <Grid container spacing={2} justifyContent="center">
+            {books.map((book) => (
+              <Grid item xs={12} sm={6} md={4} key={book.id}>
+                <Link href={`/${book.id}/`} style={{ textDecoration: 'none', color: 'black' }}>
+                  <Box
+                    border="1px solid #ccc"
+                    borderRadius="5px"
+                    padding="10px"
+                    marginBottom="10px"
+                  >
+                    {book.picture && <img src={book.picture} alt="本の写真" width="100%" />}
+                    <Typography>タイトル：「{book.title}」</Typography>
+                    <Typography>著者 ：「{book.author}」</Typography>
+                    {/* <Typography variant="h5">タイトル：「{book.title}」</Typography> */}
+                  </Box>
+                </Link>
+              </Grid>
+            ))}
+          </Grid>
+        </ul>
+      </Container>
     </>
   );
 }

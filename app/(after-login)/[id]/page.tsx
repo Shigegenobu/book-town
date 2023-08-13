@@ -3,27 +3,19 @@ import { Box, Button, Container, Grid, Stack, Typography } from '@mui/material';
 import Link from 'next/link';
 import { BookType } from '@/app/types/BookType';
 import { db } from '@/app/service/firebase';
-import { collection, getDocs, onSnapshot } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs, onSnapshot } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 
 export default function BookShow() {
   const [books, setBooks] = useState<BookType[]>([]);
 
-  // const router =useRouter()
+  const router = useRouter();
   // console.log(router)
   const params = useParams();
   console.log(params);
   const bookId = params.id;
   console.log(bookId);
-
-  // const pathname = usePathname()
-  // const searchParams = useSearchParams()
-  // console.log(pathname)
-  // console.log(searchParams)
-
-  // const pathname = usePathname()
-  // console.log(pathname)
 
   const bookToShow = books.find((book) => book.id === bookId);
   // console.log(bookToShow);
@@ -65,6 +57,19 @@ export default function BookShow() {
     return () => unsubscribe();
   }, []);
 
+  //削除
+  const handleDeleteClick = async () => {
+    try {
+      await deleteDoc(doc(db, 'books', bookId));
+      console.log('削除されました');
+
+      // 削除後のリダイレクト処理を追加
+      router.push('/list');
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     // console.log(books);
   }, [books]);
@@ -99,6 +104,15 @@ export default function BookShow() {
               <Link href={`/bookedit?id=${bookId}`}>
                 <Button variant="contained">編集ページへ</Button>
               </Link>
+              <Button
+                variant="contained"
+                size="large"
+                color="error"
+                sx={{ my: 3 }}
+                onClick={() => handleDeleteClick()}
+              >
+                削除
+              </Button>
             </Grid>
           </Grid>
         </Container>

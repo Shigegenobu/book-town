@@ -4,5 +4,5 @@ export type BookType = {
   category: string;
   point: string;
   id: string;
-  picture:string
+  picture: string;
 };
