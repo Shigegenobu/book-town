@@ -33,6 +33,7 @@ export default function BookShow() {
           category: data.category,
           point: data.point,
           picture: data.picture,
+          createdAt: data.createdAt,
         };
       });
       // console.log(fetchedBooks);
@@ -49,6 +50,7 @@ export default function BookShow() {
           category: data.category,
           point: data.point,
           picture: data.picture,
+          createdAt: data.createdAt,
         };
       });
       setBooks(updatedBooks);
@@ -86,6 +88,9 @@ export default function BookShow() {
               <Typography>著者：「{bookToShow?.author}」</Typography>
               <Typography>ジャンル：「{bookToShow?.category}」</Typography>
               <Typography>⭐️おすすめポイント⭐️：「{bookToShow?.point}」</Typography>
+              <Typography>
+                {bookToShow?.createdAt && bookToShow.createdAt.toDate().toLocaleString()}
+              </Typography>
             </Stack>
           </Box>
 

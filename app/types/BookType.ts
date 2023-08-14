@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 export type BookType = {
   title: string;
   author: string;
@@ -5,4 +7,5 @@ export type BookType = {
   point: string;
   id: string;
   picture: string;
+  createdAt: Timestamp;
 };
