@@ -1,7 +1,6 @@
 'use client';
-import { Box, Button, Container, Grid, Stack, TextField, Typography } from '@mui/material';
+import { Avatar, Box, Button, Container, Grid, Stack, TextField, Typography } from '@mui/material';
 import Link from 'next/link';
-import MenuBookTwoToneIcon from '@mui/icons-material/MenuBookTwoTone';
 import { useEffect, useState } from 'react';
 import { BookType } from '@/app/types/BookType';
 import { db } from '@/app/service/firebase';
@@ -10,7 +9,18 @@ import { useAuth } from '@/app/context/auth';
 
 export default function List() {
   const [books, setBooks] = useState<BookType[]>([]);
-  // const uesr = useAuth();
+  const user = useAuth();
+  // console.log(user);
+
+  // if (user && user.user) {
+  //   const userIcon = user.user.photoURL;
+  //   console.log(userIcon);
+  //   // 以降のコードで userIcon を使用する
+  // } else {
+  //   console.log('だめ');
+  //   // ユーザーがログインしていない場合の処理
+  //   // 例えば、代替のアイコンを表示する、ログインを促すなど
+  // }
 
   useEffect(() => {
     // firebaseからデータを取得
@@ -18,6 +28,7 @@ export default function List() {
     getDocs(bookData).then((snapShot) => {
       const fetchedBooks = snapShot.docs.map((doc) => {
         const data = doc.data();
+        // console.log(data)
         return {
           id: doc.id,
           title: data.title,
@@ -25,9 +36,10 @@ export default function List() {
           category: data.category,
           point: data.point,
           picture: data.picture,
+          createdAt: data.createdAt,
         };
       });
-      console.log(fetchedBooks);
+      // console.log(fetchedBooks);
       setBooks(fetchedBooks);
     });
     // リアルタイムで取得
@@ -41,6 +53,7 @@ export default function List() {
           category: data.category,
           point: data.point,
           picture: data.picture,
+          createdAt: data.createdAt,
         };
       });
       setBooks(updatedBooks);
@@ -98,11 +111,12 @@ export default function List() {
                     borderRadius="5px"
                     padding="10px"
                     marginBottom="10px"
-                  >
+                    >
                     {book.picture && <img src={book.picture} alt="本の写真" width="100%" />}
+                    <Avatar alt="" src="userIcon" />
                     <Typography>タイトル：「{book.title}」</Typography>
                     <Typography>著者 ：「{book.author}」</Typography>
-                    {/* <Typography variant="h5">タイトル：「{book.title}」</Typography> */}
+                    <Typography>{book.createdAt&&book.createdAt.toDate().toLocaleString()}</Typography>
                   </Box>
                 </Link>
               </Grid>

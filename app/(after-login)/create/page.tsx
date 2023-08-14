@@ -17,7 +17,7 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { db, storage } from '@/app/service/firebase';
 import { BookType } from '@/app/types/BookType';
-import { collection, doc, getDocs, setDoc } from 'firebase/firestore';
+import { Timestamp, collection, doc, getDocs, serverTimestamp, setDoc } from 'firebase/firestore';
 import { useAuth } from '@/app/context/auth';
 import { useRouter } from 'next/navigation';
 
@@ -29,6 +29,7 @@ export default function Create() {
     category: '',
     point: '',
     picture: '',
+    createdAt: Timestamp.now(),
   });
 
   const router = useRouter();
@@ -80,6 +81,7 @@ export default function Create() {
       category: '',
       point: '',
       picture: '',
+      createdAt: Timestamp.now(),
     });
   };
 
@@ -126,6 +128,7 @@ export default function Create() {
     }
 
     const newBookRef = doc(collection(db, 'books'));
+    // const currentTime = Date.now()
     //新しい投稿を作成
     const newBook: BookType = {
       id: user.user.id,
@@ -134,6 +137,8 @@ export default function Create() {
       category: book.category,
       point: book.point,
       picture: book.picture,
+      // createdAt: currentTime,
+      createdAt: Timestamp.now(),
     };
 
     await setDoc(newBookRef, newBook)
@@ -156,6 +161,7 @@ export default function Create() {
             <Grid item xs={4}>
               <h2>画像アップローダー</h2>
               <p>JpegかPngの画像ファイル</p>
+
               <Box>
                 <Button variant="contained">
                   ファイルを選択

@@ -22,7 +22,6 @@ function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
-
   const user = useAuth();
   // console.log(user);
 
@@ -135,7 +134,7 @@ function ResponsiveAppBar() {
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 {/* {user?.photoURL ? ( */}
-                {/* <Avatar alt="" src={user?.photoURL} /> */}
+                {/* <Avatar alt="" src={user?.photoURL && user.photoURL} /> */}
                 {/* ) : ( */}
                 {/* <Avatar alt="Default" src="/path/to/default-image.jpg" /> */}
                 {/* )} */}

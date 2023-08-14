@@ -69,6 +69,7 @@ export default function BookEdit({ searchParams }: { searchParams: { id: string 
           category: data.category,
           point: data.point,
           picture: data.picture,
+          createdAt: data.createdAt,
         };
       });
       // console.log(fetchedBooks);
@@ -85,6 +86,7 @@ export default function BookEdit({ searchParams }: { searchParams: { id: string 
           category: data.category,
           point: data.point,
           picture: data.picture,
+          createdAt: data.createdAt,
         };
       });
       setEditBooks(updatedBooks);

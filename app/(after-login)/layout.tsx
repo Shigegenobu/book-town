@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, Suspense } from 'react';
 import ResponsiveAppBar from '../ResponsiveAppBar';
 import UserGuard from '../guards/user-guard';
 
@@ -9,14 +9,14 @@ interface IProps {
   session: any;
 }
 
-
 export default function RootLayout({ children }: IProps) {
   return (
     <>
       <UserGuard>
         <ResponsiveAppBar />
-
-        <div>{children}</div>
+        {/* <Suspense> */}
+          <div>{children}</div>
+        {/* </Suspense> */}
       </UserGuard>
     </>
   );
