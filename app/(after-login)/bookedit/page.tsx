@@ -32,7 +32,7 @@ export default function BookEdit({ searchParams }: { searchParams: { id: string 
   const router = useRouter();
   const bookId = searchParams.id;
   // console.log(searchParams);
-  console.log(bookId);
+  // console.log(bookId);
 
   const handleEditTitleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     // console.log(e.target.value);
@@ -53,8 +53,13 @@ export default function BookEdit({ searchParams }: { searchParams: { id: string 
     setNewPoint(e.target.value);
   };
 
-  const bookToEdit = editBooks.find((editBook) => editBook.id === bookId);
-  // console.log(bookToEdit);
+  // const bookToEdit = editBooks.find((editBook) => editBook.docId === bookId);
+
+  const bookToEdit = editBooks.find((editBook) => editBook.docId === bookId);
+  // console.log(editBooks);
+
+  // const bookDocId = bookToEdit?.docId;
+  // console.log(bookDocId);
 
   useEffect(() => {
     // firebaseからデータを取得
@@ -63,7 +68,10 @@ export default function BookEdit({ searchParams }: { searchParams: { id: string 
       const fetchedBooks = snapShot.docs.map((doc) => {
         const data = doc.data();
         return {
-          id: doc.id,
+          docId: doc.id,
+          userId: data.userId,
+          userName: data.userName,
+          userPhotoURL: data.userPhotoURL,
           title: data.title,
           author: data.author,
           category: data.category,
@@ -80,7 +88,10 @@ export default function BookEdit({ searchParams }: { searchParams: { id: string 
       const updatedBooks = book.docs.map((doc) => {
         const data = doc.data();
         return {
-          id: doc.id,
+          docId: doc.id,
+          userId: data.userId,
+          userName: data.userName,
+          userPhotoURL: data.userPhotoURL,
           title: data.title,
           author: data.author,
           category: data.category,
@@ -89,6 +100,7 @@ export default function BookEdit({ searchParams }: { searchParams: { id: string 
           createdAt: data.createdAt,
         };
       });
+      // console.log(updatedBooks)
       setEditBooks(updatedBooks);
     });
     return () => unsubscribe();
@@ -107,6 +119,7 @@ export default function BookEdit({ searchParams }: { searchParams: { id: string 
     }
 
     try {
+      // const newDocRef = doc(db, 'books', bookDocId);
       const newDocRef = doc(db, 'books', bookId);
       await updateDoc(newDocRef, {
         title: newTitle,

@@ -23,7 +23,10 @@ import { useRouter } from 'next/navigation';
 
 export default function Create() {
   const [book, setBook] = useState<BookType>({
-    id: '',
+    docId: '',
+    userId: '',
+    userName: '',
+    userPhotoURL: '',
     title: '',
     author: '',
     category: '',
@@ -33,7 +36,8 @@ export default function Create() {
   });
 
   const router = useRouter();
-  const user = useAuth();
+  const { user } = useAuth();
+  console.log(user);
 
   const OnFileUploadToFirebase = (e: { target: { files: any } }) => {
     // console.log(e.target.files[0].name);
@@ -75,7 +79,10 @@ export default function Create() {
 
   const resetInput = () => {
     setBook({
-      id: '',
+      docId: '',
+      userId: '',
+      userName: '',
+      userPhotoURL: '',
       title: '',
       author: '',
       category: '',
@@ -131,13 +138,15 @@ export default function Create() {
     // const currentTime = Date.now()
     //新しい投稿を作成
     const newBook: BookType = {
-      id: user.user.id,
+      userId: user.id,
+      userName: user.name,
+      userPhotoURL: user.photoURL,
+      docId: book.docId,
       title: book.title,
       author: book.author,
       category: book.category,
       point: book.point,
       picture: book.picture,
-      // createdAt: currentTime,
       createdAt: Timestamp.now(),
     };
 
@@ -145,7 +154,7 @@ export default function Create() {
       .then(() => {
         alert('保存完了');
         resetInput();
-        console.log('Document written with ID:', newBook.id);
+        console.log('Document written with ID:', newBook.userId);
         router.push('./list');
       })
       .catch((error) => {

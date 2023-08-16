@@ -1,26 +1,55 @@
 'use client';
-import { Avatar, Box, Button, Container, Grid, Stack, TextField, Typography } from '@mui/material';
+import {
+  Avatar,
+  Box,
+  Button,
+  Container,
+  Grid,
+  MenuItem,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
+import MenuBookTwoToneIcon from '@mui/icons-material/MenuBookTwoTone';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { BookType } from '@/app/types/BookType';
 import { db } from '@/app/service/firebase';
 import { collection, getDocs, onSnapshot } from 'firebase/firestore';
-import { useAuth } from '@/app/context/auth';
 
 export default function List() {
   const [books, setBooks] = useState<BookType[]>([]);
-  const user = useAuth();
-  // console.log(user);
+  const [sortDateDirection, setSortDateDirection] = useState<'asc' | 'desc'>('asc');
+  const [filterTitle, setFilterTitle] = useState('');
+  const [filterAuthor, setFilterAuthor] = useState<string>('');
+  const [filterUserId, setFilterUserId] = useState<string>('');
 
-  // if (user && user.user) {
-  //   const userIcon = user.user.photoURL;
-  //   console.log(userIcon);
-  //   // 以降のコードで userIcon を使用する
-  // } else {
-  //   console.log('だめ');
-  //   // ユーザーがログインしていない場合の処理
-  //   // 例えば、代替のアイコンを表示する、ログインを促すなど
-  // }
+  const handleSortDateClick = () => {
+    console.log('並び替え成功');
+    setSortDateDirection((prevDirection) => (prevDirection === 'asc' ? 'desc' : 'asc'));
+  };
+
+  const filteredBooks = books.filter((book) => {
+    const matchesTitle = book.title.toLowerCase().includes(filterTitle.toLowerCase());
+    const matchesAuthor = book.author.toLowerCase().includes(filterAuthor.toLowerCase());
+    const matchesUserId = book.userId.toLowerCase().includes(filterUserId.toLowerCase());
+
+    return matchesAuthor && matchesUserId && matchesTitle;
+  });
+
+  useEffect(() => {
+    const sortedBooks = [...books].sort((a, b) => {
+      const dateA = a.createdAt.toDate();
+      const dateB = b.createdAt.toDate();
+
+      if (sortDateDirection === 'asc') {
+        return dateA.getTime() - dateB.getTime();
+      } else {
+        return dateB.getTime() - dateA.getTime();
+      }
+    });
+    setBooks(sortedBooks);
+  }, [sortDateDirection]);
 
   useEffect(() => {
     // firebaseからデータを取得
@@ -28,9 +57,12 @@ export default function List() {
     getDocs(bookData).then((snapShot) => {
       const fetchedBooks = snapShot.docs.map((doc) => {
         const data = doc.data();
-        // console.log(data)
+        // console.log(data);
         return {
-          id: doc.id,
+          docId: doc.id,
+          userId: data.userId,
+          userName: data.userName,
+          userPhotoURL: data.userPhotoURL,
           title: data.title,
           author: data.author,
           category: data.category,
@@ -47,7 +79,10 @@ export default function List() {
       const updatedBooks = book.docs.map((doc) => {
         const data = doc.data();
         return {
-          id: doc.id,
+          docId: doc.id,
+          userId: data.userId,
+          userName: data.userName,
+          userPhotoURL: data.userPhotoURL,
           title: data.title,
           author: data.author,
           category: data.category,
@@ -63,27 +98,54 @@ export default function List() {
   }, []);
 
   useEffect(() => {
-    console.log(books);
+    // console.log(books);
   }, [books]);
 
   return (
     <>
       <Container>
         <h1>このページに投稿された内容が入る予定</h1>
-        {/* <Box>
-          <Stack spacing={2}>
-            <TextField label="タイトル入力欄" variant="standard" autoComplete="off" />
-            <TextField label="作者を入力欄" variant="standard" autoComplete="off" />
-            <TextField label="出版社入力欄" variant="standard" autoComplete="off" />
-            <TextField label="ジャンル入力欄" variant="standard" autoComplete="off" />
-          </Stack>
-          <br />
-          <br />
-          <br />
+        <Box sx={{ display: 'flex', alignContent: 'center' }}>
+          <Typography mr={3} sx={{ display: 'inline-block', width: '150px' }}>
+            タイトルで絞り込む
+          </Typography>
+          <TextField
+            autoComplete="off"
+            value={filterTitle}
+            onChange={(e) => setFilterTitle(e.target.value)}
+          />
+        </Box>
+        <Box sx={{ display: 'flex', alignContent: 'center', mt: 3 }}>
+          <Typography mr={3} sx={{ display: 'inline-block', width: '150px' }}>
+            著者で絞り込む
+          </Typography>
+          <TextField
+            autoComplete="off"
+            value={filterAuthor}
+            onChange={(e) => setFilterAuthor(e.target.value)}
+          />
+        </Box>
+        <Box sx={{ display: 'flex', alignContent: 'center', mt: 3 }}>
+          <Typography mr={3} sx={{ display: 'inline-block', width: '150px' }}>
+            IDで絞り込む
+          </Typography>
+          <TextField
+            autoComplete="off"
+            value={filterUserId}
+            onChange={(e) => setFilterUserId(e.target.value)}
+          />
+        </Box>
+
+        <Box sx={{ my: 2, display: 'flex', justifyContent: 'space-evenly', width: 300 }}>
           <Box>
-            <MenuBookTwoToneIcon />
+            <Button variant="contained" onClick={() => handleSortDateClick()}>
+              {sortDateDirection === 'asc' ? '最新順に' : '古い順に'}
+            </Button>
           </Box>
-        </Box> */}
+          <Box>
+            <Button variant="contained">いい本📕</Button>
+          </Box>
+        </Box>
         <Box>
           <Grid container justifyContent="space-between" spacing={2} mt={2}>
             <Grid item>
@@ -103,20 +165,38 @@ export default function List() {
 
         <ul>
           <Grid container spacing={2} justifyContent="center">
-            {books.map((book) => (
-              <Grid item xs={12} sm={6} md={4} key={book.id}>
-                <Link href={`/${book.id}/`} style={{ textDecoration: 'none', color: 'black' }}>
+            {filteredBooks.map((book) => (
+              <Grid item xs={12} sm={6} md={4} key={book.docId}>
+                <Link href={`/${book.docId}/`} style={{ textDecoration: 'none', color: 'black' }}>
                   <Box
                     border="1px solid #ccc"
                     borderRadius="5px"
                     padding="10px"
                     marginBottom="10px"
-                    >
+                  >
+                    <Box sx={{ display: 'inline-flex', alignContent: 'center' }}>
+                      <Avatar alt="" src={book.userPhotoURL} />
+                      <Typography fontSize={25}>{book.userName}</Typography>
+                    </Box>
+                    <Box sx={{ fontSize: 3 }}>ID:{book.userId}</Box>
+                    <br />
                     {book.picture && <img src={book.picture} alt="本の写真" width="100%" />}
-                    <Avatar alt="" src="userIcon" />
                     <Typography>タイトル：「{book.title}」</Typography>
                     <Typography>著者 ：「{book.author}」</Typography>
-                    <Typography>{book.createdAt&&book.createdAt.toDate().toLocaleString()}</Typography>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        mt: 3,
+                      }}
+                    >
+                      <MenuBookTwoToneIcon fontSize="large" />
+
+                      <Typography>
+                        {book.createdAt && book.createdAt.toDate().toLocaleString()}
+                      </Typography>
+                    </Box>
                   </Box>
                 </Link>
               </Grid>
