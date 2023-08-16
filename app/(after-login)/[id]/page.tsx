@@ -1,24 +1,32 @@
 'use client';
-import { Box, Button, Container, Grid, Stack, Typography } from '@mui/material';
+import { Avatar, Box, Button, Container, Grid, Stack, Typography } from '@mui/material';
 import Link from 'next/link';
 import { BookType } from '@/app/types/BookType';
 import { db } from '@/app/service/firebase';
 import { collection, deleteDoc, doc, getDocs, onSnapshot } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useAuth } from '@/app/context/auth';
 
 export default function BookShow() {
   const [books, setBooks] = useState<BookType[]>([]);
 
+
+  const { user } = useAuth();
+  // console.log(user);
+
   const router = useRouter();
   // console.log(router)
   const params = useParams();
-  console.log(params);
+  // console.log(params);
   const bookId = params.id;
-  console.log(bookId);
+  // console.log(bookId);
 
-  const bookToShow = books.find((book) => book.id === bookId);
-  // console.log(bookToShow);
+  const bookToShow = books.find((book) => book.docId === bookId);
+  console.log(bookToShow);
+
+  // const bookUserId = bookToShow?.userId;
+  // console.log(bookUserId);
 
   useEffect(() => {
     // firebaseからデータを取得
@@ -27,7 +35,10 @@ export default function BookShow() {
       const fetchedBooks = snapShot.docs.map((doc) => {
         const data = doc.data();
         return {
-          id: doc.id,
+          docId: doc.id,
+          userId: data.userId,
+          userName: data.userName,
+          userPhotoURL: data.userPhotoURL,
           title: data.title,
           author: data.author,
           category: data.category,
@@ -44,7 +55,10 @@ export default function BookShow() {
       const updatedBooks = book.docs.map((doc) => {
         const data = doc.data();
         return {
-          id: doc.id,
+          docId: doc.id,
+          userId: data.userId,
+          userName: data.userName,
+          userPhotoURL: data.userPhotoURL,
           title: data.title,
           author: data.author,
           category: data.category,
@@ -76,12 +90,22 @@ export default function BookShow() {
     // console.log(books);
   }, [books]);
 
+  //idが同じなら編集、削除できる
+  const canEdit = user && bookToShow && user.userId === bookToShow.userId;
+
+
   return (
     <>
       <Box>
         <Box>詳細ページ</Box>
         <Container>
           <Box border="1px solid #ccc" borderRadius="5px" padding="10px" marginBottom="10px">
+            <Box sx={{ display: 'inline-flex', alignContent: 'center' }}>
+              <Avatar alt="" src={bookToShow?.userPhotoURL} />
+              <Typography fontSize={25}>{bookToShow?.userName}</Typography>
+            </Box>
+            <Box>ID:{bookToShow?.userId}</Box>
+            <br />
             <Stack spacing={2}>
               <img src={bookToShow?.picture} alt="本の写真" width="100%" height="50%" />
               <Typography>タイトル：「{bookToShow?.title}」</Typography>
@@ -106,6 +130,23 @@ export default function BookShow() {
               </Link>
             </Grid> */}
             <Grid item xs={2}>
+            {/* {canEdit && ( // ログインユーザーが編集可能な場合のみ表示
+            <>
+              <Link href={`/bookedit?id=${bookId}`}>
+                <Button variant="contained">編集ページへ</Button>
+              </Link>
+              <Button
+                variant="contained"
+                size="large"
+                color="error"
+                sx={{ my: 3 }}
+                onClick={() => handleDeleteClick()}
+              >
+                削除
+              </Button>
+            </>
+          )} */}
+                {/* <Link href={`/bookedit?id=${bookUserId}`}> */}
               <Link href={`/bookedit?id=${bookId}`}>
                 <Button variant="contained">編集ページへ</Button>
               </Link>

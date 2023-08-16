@@ -13,7 +13,6 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { useAuth } from './context/auth';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -22,7 +21,7 @@ function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
-  const user = useAuth();
+  const { user } = useAuth();
   // console.log(user);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -133,14 +132,7 @@ function ResponsiveAppBar() {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                {/* {user?.photoURL ? ( */}
-                {/* <Avatar alt="" src={user?.photoURL && user.photoURL} /> */}
-                {/* ) : ( */}
-                {/* <Avatar alt="Default" src="/path/to/default-image.jpg" /> */}
-                {/* )} */}
-                {/* <Avatar alt="Smile" src="/UserImage/iviv_d4w2_210527.jpg" /> */}
-                <Avatar src="" alt="" />
-                {/* <Avatar src={user?.photoURL || '/UserImage / images.png'} alt="" /> */}
+                <Avatar alt="" src={user?.photoURL} />
               </IconButton>
             </Tooltip>
             <Menu
