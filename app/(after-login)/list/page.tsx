@@ -1,21 +1,12 @@
 'use client';
-import {
-  Avatar,
-  Box,
-  Button,
-  Container,
-  Grid,
-  MenuItem,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Avatar, Box, Button, Container, Grid, TextField, Typography } from '@mui/material';
 import MenuBookTwoToneIcon from '@mui/icons-material/MenuBookTwoTone';
 import Link from 'next/link';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BookType } from '@/app/types/BookType';
 import { db } from '@/app/service/firebase';
 import { collection, getDocs, onSnapshot } from 'firebase/firestore';
+import CircularColor from '@/app/CircularColor';
 
 export default function List() {
   const [books, setBooks] = useState<BookType[]>([]);
@@ -98,8 +89,25 @@ export default function List() {
   }, []);
 
   useEffect(() => {
-    // console.log(books);
+    console.log(books);
   }, [books]);
+
+  const [dataLoaded, setDataLoaded] = useState(false);
+  useEffect(() => {
+    // データの取得処理
+
+    // データが取得されたら、setDataLoaded(true) を呼ぶ
+    setDataLoaded(true);
+  }, []);
+
+  if (!dataLoaded) {
+    return (
+      <>
+        Loading...
+        <CircularColor />;
+      </>
+    );
+  }
 
   return (
     <>
@@ -167,7 +175,8 @@ export default function List() {
           <Grid container spacing={2} justifyContent="center">
             {filteredBooks.map((book) => (
               <Grid item xs={12} sm={6} md={4} key={book.docId}>
-                <Link href={`/${book.docId}/`} style={{ textDecoration: 'none', color: 'black' }}>
+                {/* <Link href={`/${book.userId}/`} style={{ textDecoration: 'none', color: 'black' }}> */}
+                  <Link href={`/${book.docId}/`} style={{ textDecoration: 'none', color: 'black' }}>
                   <Box
                     border="1px solid #ccc"
                     borderRadius="5px"

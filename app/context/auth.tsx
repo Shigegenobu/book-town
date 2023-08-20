@@ -2,7 +2,6 @@ import { ReactNode, createContext, useContext, useEffect, useState } from 'react
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from '../service/firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import { useRouter } from 'next/navigation';
 import { UserType } from '../types/UserType';
 
 // コンテクスト用の型を定義

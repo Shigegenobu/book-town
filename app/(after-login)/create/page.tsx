@@ -17,7 +17,7 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { db, storage } from '@/app/service/firebase';
 import { BookType } from '@/app/types/BookType';
-import { Timestamp, collection, doc, getDocs, serverTimestamp, setDoc } from 'firebase/firestore';
+import { Timestamp, collection, doc, setDoc } from 'firebase/firestore';
 import { useAuth } from '@/app/context/auth';
 import { useRouter } from 'next/navigation';
 
@@ -37,13 +37,13 @@ export default function Create() {
 
   const router = useRouter();
   const { user } = useAuth();
-  console.log(user);
+  console.log('ユーザー', user);
 
   const OnFileUploadToFirebase = (e: { target: { files: any } }) => {
     // console.log(e.target.files[0].name);
     const file = e.target.files[0];
     const storageRef = ref(storage, file.name);
-    // const storageRef = ref(storage, 'BookImage/' + file.name);
+
     const uploadImage = uploadBytesResumable(storageRef, file);
 
     uploadImage.on(
@@ -93,7 +93,6 @@ export default function Create() {
   };
 
   const handleTitleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    // setTitle(e.target.value);
     setBook((prevBook) => ({
       ...prevBook,
       title: e.target.value,
@@ -101,7 +100,6 @@ export default function Create() {
   };
 
   const handleAuthorChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    // setAuthor(e.target.value);
     setBook((prevBook) => ({
       ...prevBook,
       author: e.target.value,
@@ -109,7 +107,6 @@ export default function Create() {
   };
 
   const handleCategoryChange = (e: SelectChangeEvent<string>) => {
-    // setCategory(e.target.value);
     setBook((prevBook) => ({
       ...prevBook,
       category: e.target.value,
@@ -117,7 +114,6 @@ export default function Create() {
   };
 
   const handlePointChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    // setPoint(e.target.value);
     setBook((prevBook) => ({
       ...prevBook,
       point: e.target.value,
@@ -135,7 +131,6 @@ export default function Create() {
     }
 
     const newBookRef = doc(collection(db, 'books'));
-    // const currentTime = Date.now()
     //新しい投稿を作成
     const newBook: BookType = {
       userId: user.id,

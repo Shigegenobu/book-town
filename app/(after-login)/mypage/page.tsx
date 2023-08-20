@@ -1,5 +1,7 @@
 'use client';
-import { Avatar, Box, Button, Container, Grid, Stack, TextField, Typography } from '@mui/material';
+import { Avatar, Box, Button, Container, Grid, Stack, Typography } from '@mui/material';
+import MenuBookTwoToneIcon from '@mui/icons-material/MenuBookTwoTone';
+
 import { signOut } from 'firebase/auth';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -8,6 +10,7 @@ import { useAuth } from '@/app/context/auth';
 import { useEffect, useState } from 'react';
 import { BookType } from '@/app/types/BookType';
 import { collection, getDocs, onSnapshot } from 'firebase/firestore';
+import CircularColor from '@/app/CircularColor';
 
 export default function Mypage() {
   const [books, setBooks] = useState<BookType[]>([]);
@@ -79,6 +82,15 @@ export default function Mypage() {
     // console.log(books);
   }, [books]);
 
+  if (user === undefined) {
+    return (
+      <>
+        <p>ローディング中...</p>
+        <CircularColor />
+      </>
+    );
+  }
+
   return (
     <>
       <Box>Mypage</Box>
@@ -123,6 +135,7 @@ export default function Mypage() {
 
           <Button
             variant="contained"
+            color="error"
             onClick={handleLogout}
             sx={{ width: 200, padding: 1, margin: 2 }}
           >
@@ -137,36 +150,41 @@ export default function Mypage() {
               .filter((book) => book.userId === user?.id)
               .map((book) => (
                 <Grid item xs={12} sm={6} md={4} key={book.docId}>
-                  <Box
-                    border="1px solid #ccc"
-                    borderRadius="5px"
-                    padding="10px"
-                    marginBottom="10px"
+                  <Link
+                    href={`/${book.docId}/`}
+                    style={{ textDecoration: 'none', color: 'black' }}
                   >
-                    <Box sx={{ display: 'inline-flex', alignContent: 'center' }}>
-                      <Avatar alt="" src={book.userPhotoURL} />
-                      <Typography fontSize={25}>{book.userName}</Typography>
-                    </Box>
-                    <Box sx={{ fontSize: 3 }}>ID:{book.userId}</Box>
-                    <br />
-                    {book.picture && <img src={book.picture} alt="本の写真" width="100%" />}
-                    <Typography>タイトル：「{book.title}」</Typography>
-                    <Typography>著者 ：「{book.author}」</Typography>
                     <Box
-                      sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        mt: 3,
-                      }}
+                      border="1px solid #ccc"
+                      borderRadius="5px"
+                      padding="10px"
+                      marginBottom="10px"
                     >
-                      {/* <MenuBookTwoToneIcon fontSize="large" /> */}
+                      <Box sx={{ display: 'inline-flex', alignContent: 'center' }}>
+                        <Avatar alt="" src={book.userPhotoURL} />
+                        <Typography fontSize={25}>{book.userName}</Typography>
+                      </Box>
+                      <Box sx={{ fontSize: 3 }}>ID:{book.userId}</Box>
+                      <br />
+                      {book.picture && <img src={book.picture} alt="本の写真" width="100%" />}
+                      <Typography>タイトル：「{book.title}」</Typography>
+                      <Typography>著者 ：「{book.author}」</Typography>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          mt: 3,
+                        }}
+                      >
+                        <MenuBookTwoToneIcon fontSize="large" />
 
-                      <Typography>
-                        {book.createdAt && book.createdAt.toDate().toLocaleString()}
-                      </Typography>
+                        <Typography>
+                          {book.createdAt && book.createdAt.toDate().toLocaleString()}
+                        </Typography>
+                      </Box>
                     </Box>
-                  </Box>
+                  </Link>
                 </Grid>
               ))}
           </Grid>

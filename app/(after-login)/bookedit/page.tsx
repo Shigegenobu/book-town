@@ -1,5 +1,4 @@
 'use client';
-import { useAuth } from '@/app/context/auth';
 import { db } from '@/app/service/firebase';
 import { BookType } from '@/app/types/BookType';
 import {
@@ -8,7 +7,6 @@ import {
   Container,
   FormControl,
   Grid,
-  InputLabel,
   MenuItem,
   Select,
   SelectChangeEvent,
@@ -16,12 +14,18 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { collection, doc, getDocs, onSnapshot, updateDoc } from 'firebase/firestore';
+import {
+  DocumentReference,
+  collection,
+  doc,
+  getDocs,
+  onSnapshot,
+  updateDoc,
+} from 'firebase/firestore';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ChangeEvent, useEffect, useState } from 'react';
 
-// export default function BookEdit({params,searchParams}:{params:string,searchParams:{id:string}}) {
 export default function BookEdit({ searchParams }: { searchParams: { id: string } }) {
   const [editBooks, setEditBooks] = useState<BookType[]>([]);
   const [newTitle, setNewTitle] = useState('');
@@ -31,7 +35,6 @@ export default function BookEdit({ searchParams }: { searchParams: { id: string 
 
   const router = useRouter();
   const bookId = searchParams.id;
-  // console.log(searchParams);
   // console.log(bookId);
 
   const handleEditTitleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -54,12 +57,18 @@ export default function BookEdit({ searchParams }: { searchParams: { id: string 
   };
 
   // const bookToEdit = editBooks.find((editBook) => editBook.docId === bookId);
-
   const bookToEdit = editBooks.find((editBook) => editBook.docId === bookId);
   // console.log(editBooks);
+  // console.log(bookToEdit);
 
-  // const bookDocId = bookToEdit?.docId;
-  // console.log(bookDocId);
+  const bookDocId = bookToEdit?.docId;
+  console.log(bookDocId);
+
+  let newDocRef: DocumentReference | undefined; // doc()関数のための変数を宣言
+
+  if (bookToEdit) {
+    newDocRef = doc(db, 'books', bookToEdit.docId);
+  }
 
   useEffect(() => {
     // firebaseからデータを取得
@@ -119,16 +128,18 @@ export default function BookEdit({ searchParams }: { searchParams: { id: string 
     }
 
     try {
-      // const newDocRef = doc(db, 'books', bookDocId);
-      const newDocRef = doc(db, 'books', bookId);
-      await updateDoc(newDocRef, {
-        title: newTitle,
-        author: newAuthor,
-        category: newCategory,
-        point: newPoint,
-      });
-      console.log('更新されました');
-      router.push('/list');
+      if (newDocRef) {
+        // const newDocRef = doc(db, 'books', bookDocId);
+        // const newDocRef = doc(db, 'books', bookId);
+        await updateDoc(newDocRef, {
+          title: newTitle,
+          author: newAuthor,
+          category: newCategory,
+          point: newPoint,
+        });
+        console.log('更新されました');
+        router.push('/list');
+      }
     } catch (error) {
       console.log('保存に失敗しました');
     }
