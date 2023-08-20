@@ -15,7 +15,7 @@ export default function RootLayout({ children }: IProps) {
       <UserGuard>
         <ResponsiveAppBar />
         {/* <Suspense> */}
-          <div>{children}</div>
+        <div>{children}</div>
         {/* </Suspense> */}
       </UserGuard>
     </>
