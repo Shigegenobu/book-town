@@ -4,4 +4,5 @@ export type UserType = {
   photoURL: string;
   email: string;
   createdAt: number;
+  likeBookCount: number;
 };

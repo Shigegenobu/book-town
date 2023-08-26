@@ -20,6 +20,7 @@ import { BookType } from '@/app/types/BookType';
 import { Timestamp, collection, doc, setDoc } from 'firebase/firestore';
 import { useAuth } from '@/app/context/auth';
 import { useRouter } from 'next/navigation';
+import { Center } from '@chakra-ui/react';
 
 export default function Create() {
   const [book, setBook] = useState<BookType>({
@@ -33,6 +34,7 @@ export default function Create() {
     point: '',
     picture: '',
     createdAt: Timestamp.now(),
+    likeCount: 0,
   });
 
   const router = useRouter();
@@ -89,6 +91,7 @@ export default function Create() {
       point: '',
       picture: '',
       createdAt: Timestamp.now(),
+      likeCount: 0,
     });
   };
 
@@ -143,6 +146,7 @@ export default function Create() {
       point: book.point,
       picture: book.picture,
       createdAt: Timestamp.now(),
+      likeCount: book.likeCount,
     };
 
     await setDoc(newBookRef, newBook)
@@ -161,10 +165,22 @@ export default function Create() {
     <>
       <Box>
         <Container>
-          <Grid container spacing={2} mt={10}>
+          <Grid container spacing={2} mt={10} alignItems="Center">
             <Grid item xs={4}>
               <h2>画像アップローダー</h2>
-              <p>JpegかPngの画像ファイル</p>
+              <Box sx={{ position: 'relative', paddingTop: '100%', overflow: 'hidden' }}>
+                <img
+                  src={book.picture}
+                  alt="本の写真"
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                  }}
+                />
+              </Box>
 
               <Box>
                 <Button variant="contained">
@@ -174,7 +190,7 @@ export default function Create() {
               </Box>
             </Grid>
             <Grid item xs={8}>
-              <Stack spacing={2}>
+              <Stack spacing={10}>
                 <TextField
                   label="タイトルを入力して下さい"
                   variant="standard"

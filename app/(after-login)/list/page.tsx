@@ -4,20 +4,30 @@ import MenuBookTwoToneIcon from '@mui/icons-material/MenuBookTwoTone';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { BookType } from '@/app/types/BookType';
-import { db } from '@/app/service/firebase';
-import { collection, getDocs, onSnapshot } from 'firebase/firestore';
+import { auth, db } from '@/app/service/firebase';
+import { collection, getDocs, onSnapshot, query, setDoc } from 'firebase/firestore';
 import CircularColor from '@/app/CircularColor';
 
 export default function List() {
   const [books, setBooks] = useState<BookType[]>([]);
   const [sortDateDirection, setSortDateDirection] = useState<'asc' | 'desc'>('asc');
+  const [sortLikedDirection, setSortLikedeDirection] = useState<'asc' | 'desc'>('asc');
   const [filterTitle, setFilterTitle] = useState('');
   const [filterAuthor, setFilterAuthor] = useState<string>('');
   const [filterUserId, setFilterUserId] = useState<string>('');
+  const [count, setCount] = useState(0);
+
+  const userId = auth.currentUser?.uid;
+  console.log('userId', userId);
 
   const handleSortDateClick = () => {
     console.log('並び替え成功');
     setSortDateDirection((prevDirection) => (prevDirection === 'asc' ? 'desc' : 'asc'));
+  };
+
+  const handleSortLikedClick = () => {
+    console.log('並び替え成功！');
+    setSortLikedeDirection((prevlikedDirection) => (prevlikedDirection === 'asc' ? 'desc' : 'asc'));
   };
 
   const filteredBooks = books.filter((book) => {
@@ -28,6 +38,7 @@ export default function List() {
     return matchesAuthor && matchesUserId && matchesTitle;
   });
 
+  //日付の並び替え
   useEffect(() => {
     const sortedBooks = [...books].sort((a, b) => {
       const dateA = a.createdAt.toDate();
@@ -41,6 +52,21 @@ export default function List() {
     });
     setBooks(sortedBooks);
   }, [sortDateDirection]);
+
+  //いい本順に並び替え
+  useEffect(() => {
+    const sortedLikedBooks = [...books].sort((a, b) => {
+      const likedA = a.likeCount;
+      const likedB = b.likeCount;
+
+      if (sortLikedDirection === 'asc') {
+        return likedA - likedB;
+      } else {
+        return likedB - likedA;
+      }
+    });
+    setBooks(sortedLikedBooks);
+  }, [sortLikedDirection]);
 
   useEffect(() => {
     // firebaseからデータを取得
@@ -60,6 +86,7 @@ export default function List() {
           point: data.point,
           picture: data.picture,
           createdAt: data.createdAt,
+          likeCount: data.likeCount,
         };
       });
       // console.log(fetchedBooks);
@@ -80,6 +107,7 @@ export default function List() {
           point: data.point,
           picture: data.picture,
           createdAt: data.createdAt,
+          likeCount: data.likeCount,
         };
       });
       setBooks(updatedBooks);
@@ -94,8 +122,6 @@ export default function List() {
 
   const [dataLoaded, setDataLoaded] = useState(false);
   useEffect(() => {
-    // データの取得処理
-
     // データが取得されたら、setDataLoaded(true) を呼ぶ
     setDataLoaded(true);
   }, []);
@@ -104,7 +130,7 @@ export default function List() {
     return (
       <>
         Loading...
-        <CircularColor />;
+        <CircularColor />
       </>
     );
   }
@@ -151,16 +177,14 @@ export default function List() {
             </Button>
           </Box>
           <Box>
-            <Button variant="contained">いい本📕</Button>
+            <Button variant="contained" onClick={handleSortLikedClick}>
+              📕 {sortLikedDirection === 'asc' ? 'いい本多い順に' : 'いい本少ない順に'}
+            </Button>
           </Box>
         </Box>
         <Box>
           <Grid container justifyContent="space-between" spacing={2} mt={2}>
-            <Grid item>
-              {/* <Link href="./bookshow/">
-              <Button variant="contained">詳細ページへ</Button>
-            </Link> */}
-            </Grid>
+            <Grid item></Grid>
             <Grid item>
               <Link href="./create/">
                 <Button variant="contained" size="large" color="warning">
@@ -176,7 +200,7 @@ export default function List() {
             {filteredBooks.map((book) => (
               <Grid item xs={12} sm={6} md={4} key={book.docId}>
                 {/* <Link href={`/${book.userId}/`} style={{ textDecoration: 'none', color: 'black' }}> */}
-                  <Link href={`/${book.docId}/`} style={{ textDecoration: 'none', color: 'black' }}>
+                <Link href={`/${book.docId}/`} style={{ textDecoration: 'none', color: 'black' }}>
                   <Box
                     border="1px solid #ccc"
                     borderRadius="5px"
@@ -189,7 +213,24 @@ export default function List() {
                     </Box>
                     <Box sx={{ fontSize: 3 }}>ID:{book.userId}</Box>
                     <br />
-                    {book.picture && <img src={book.picture} alt="本の写真" width="100%" />}
+                    <Box
+                      sx={{ position: 'relative', paddingTop: '100%', overflow: 'hidden', mb: 3 }}
+                    >
+                      {book.picture && (
+                        <img
+                          src={book.picture}
+                          alt="本の写真"
+                          style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'contain',
+                          }}
+                        />
+                      )}
+                    </Box>
                     <Typography>タイトル：「{book.title}」</Typography>
                     <Typography>著者 ：「{book.author}」</Typography>
                     <Box
@@ -200,7 +241,15 @@ export default function List() {
                         mt: 3,
                       }}
                     >
-                      <MenuBookTwoToneIcon fontSize="large" />
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <MenuBookTwoToneIcon fontSize="large" />
+                        <Typography ml={1}>{book.likeCount}</Typography>
+                      </Box>
 
                       <Typography>
                         {book.createdAt && book.createdAt.toDate().toLocaleString()}
