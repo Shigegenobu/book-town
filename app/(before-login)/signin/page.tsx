@@ -72,8 +72,6 @@ export default function SignIn() {
         </form>
       </Container>
 
-      <Link href="/">戻る</Link>
-      <br />
     </>
   );
 }

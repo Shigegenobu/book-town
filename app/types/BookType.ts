@@ -11,4 +11,5 @@ export type BookType = {
   point: string;
   picture: string;
   createdAt: Timestamp;
+  likeCount: number;
 };

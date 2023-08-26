@@ -49,6 +49,7 @@ export default function Mypage() {
           point: data.point,
           picture: data.picture,
           createdAt: data.createdAt,
+          likeCount: data.likeCount,
         };
       });
       setBooks(fetchedBooks);
@@ -70,6 +71,7 @@ export default function Mypage() {
           point: data.point,
           picture: data.picture,
           createdAt: data.createdAt,
+          likeCount: data.likeCount,
         };
       });
       // console.log(updatedBooks);
@@ -112,13 +114,7 @@ export default function Mypage() {
           <Typography sx={{ fontWeight: 'bold', color: 'orange' }}>email</Typography>
           <Typography>{user?.email}</Typography>
         </Box>
-        <Box sx={{ my: 3 }}>
-          {/* <Typography sx={{ fontWeight: 'bold', color: 'orange' }}>photoURL</Typography>
-          <Typography>{user?.photoURL}</Typography>
-          <Box sx={{ border: 1, width: '50%' }}>
-            {<img src={user?.photoURL} alt="ユーザーの写真" width="50%" />}
-          </Box> */}
-        </Box>
+        <Box sx={{ my: 3 }}></Box>
 
         <Stack spacing={3}>
           <Grid>
@@ -150,10 +146,7 @@ export default function Mypage() {
               .filter((book) => book.userId === user?.id)
               .map((book) => (
                 <Grid item xs={12} sm={6} md={4} key={book.docId}>
-                  <Link
-                    href={`/${book.docId}/`}
-                    style={{ textDecoration: 'none', color: 'black' }}
-                  >
+                  <Link href={`/${book.docId}/`} style={{ textDecoration: 'none', color: 'black' }}>
                     <Box
                       border="1px solid #ccc"
                       borderRadius="5px"
@@ -166,7 +159,24 @@ export default function Mypage() {
                       </Box>
                       <Box sx={{ fontSize: 3 }}>ID:{book.userId}</Box>
                       <br />
-                      {book.picture && <img src={book.picture} alt="本の写真" width="100%" />}
+                      <Box
+                        sx={{ position: 'relative', paddingTop: '100%', overflow: 'hidden', mb: 3 }}
+                      >
+                        {book.picture && (
+                          <img
+                            src={book.picture}
+                            alt="本の写真"
+                            style={{
+                              position: 'absolute',
+                              top: 0,
+                              left: 0,
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'contain',
+                            }}
+                          />
+                        )}
+                      </Box>
                       <Typography>タイトル：「{book.title}」</Typography>
                       <Typography>著者 ：「{book.author}」</Typography>
                       <Box

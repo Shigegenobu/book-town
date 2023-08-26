@@ -1,5 +1,5 @@
 'use client';
-import { db } from '@/app/service/firebase';
+import { db, storage } from '@/app/service/firebase';
 import { BookType } from '@/app/types/BookType';
 import {
   Box,
@@ -22,6 +22,7 @@ import {
   onSnapshot,
   updateDoc,
 } from 'firebase/firestore';
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ChangeEvent, useEffect, useState } from 'react';
@@ -32,23 +33,20 @@ export default function BookEdit({ searchParams }: { searchParams: { id: string 
   const [newAuthor, setNewAuthor] = useState('');
   const [newCategory, setNewCategory] = useState('');
   const [newPoint, setNewPoint] = useState('');
+  const [newPicture, setNewPicture] = useState('');
 
   const router = useRouter();
   const bookId = searchParams.id;
-  // console.log(bookId);
 
   const handleEditTitleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    // console.log(e.target.value);
     setNewTitle(e.target.value);
   };
 
   const handleEditAuthorChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    // console.log(e.target.value);
     setNewAuthor(e.target.value);
   };
 
   const handleEditCategoryChange = (e: SelectChangeEvent<string>) => {
-    // console.log(e.target.value);
     setNewCategory(e.target.value);
   };
 
@@ -56,9 +54,7 @@ export default function BookEdit({ searchParams }: { searchParams: { id: string 
     setNewPoint(e.target.value);
   };
 
-  // const bookToEdit = editBooks.find((editBook) => editBook.docId === bookId);
   const bookToEdit = editBooks.find((editBook) => editBook.docId === bookId);
-  // console.log(editBooks);
   // console.log(bookToEdit);
 
   const bookDocId = bookToEdit?.docId;
@@ -87,9 +83,9 @@ export default function BookEdit({ searchParams }: { searchParams: { id: string 
           point: data.point,
           picture: data.picture,
           createdAt: data.createdAt,
+          likeCount: data.likeCount,
         };
       });
-      // console.log(fetchedBooks);
       setEditBooks(fetchedBooks);
     });
     // リアルタイムで取得
@@ -107,9 +103,9 @@ export default function BookEdit({ searchParams }: { searchParams: { id: string 
           point: data.point,
           picture: data.picture,
           createdAt: data.createdAt,
+          likeCount: data.likeCount,
         };
       });
-      // console.log(updatedBooks)
       setEditBooks(updatedBooks);
     });
     return () => unsubscribe();
@@ -120,6 +116,7 @@ export default function BookEdit({ searchParams }: { searchParams: { id: string 
     setNewAuthor(bookToEdit?.author || '');
     setNewCategory(bookToEdit?.category || '');
     setNewPoint(bookToEdit?.point || '');
+    setNewPicture(bookToEdit?.picture || '');
   }, [editBooks]);
 
   const handleSaveClick = async () => {
@@ -129,13 +126,12 @@ export default function BookEdit({ searchParams }: { searchParams: { id: string 
 
     try {
       if (newDocRef) {
-        // const newDocRef = doc(db, 'books', bookDocId);
-        // const newDocRef = doc(db, 'books', bookId);
         await updateDoc(newDocRef, {
           title: newTitle,
           author: newAuthor,
           category: newCategory,
           point: newPoint,
+          picture: newPicture,
         });
         console.log('更新されました');
         router.push('/list');
@@ -145,26 +141,70 @@ export default function BookEdit({ searchParams }: { searchParams: { id: string 
     }
   };
 
+  const OnFileUploadToFirebase = (e: { target: { files: any } }) => {
+    const file = e.target.files[0];
+    const storageRef = ref(storage, file.name);
+
+    const uploadImage = uploadBytesResumable(storageRef, file);
+
+    uploadImage.on(
+      'state_changed',
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log('Upload is ' + progress + '% done');
+        switch (snapshot.state) {
+          case 'paused':
+            console.log('Upload is paused');
+            break;
+          case 'running':
+            console.log('Upload is running');
+            break;
+        }
+      },
+      (error) => {
+        console.log(error);
+      },
+      () => {
+        getDownloadURL(uploadImage.snapshot.ref).then((downloadURL) => {
+          console.log('アップロード成功！');
+          console.log('File available at', downloadURL);
+
+          setNewPicture(downloadURL);
+        });
+      }
+    );
+  };
+
   return (
     <>
       <Box>
         <Box>編集ページ</Box>
         <Container>
-          <Grid container spacing={2} mt={10}>
-            {/* <Grid item xs={4}>
+          <Grid container spacing={2} mt={10} alignContent="center">
+            <Grid item xs={4}>
               <h2>画像アップローダー</h2>
-              <p>JpegかPngの画像ファイル</p>
-              <Box>
+              {/* <Box>{newPicture}</Box> */}
+              <Box sx={{ position: 'relative', paddingTop: '100%', overflow: 'hidden' }}>
+                <img
+                  src={newPicture}
+                  alt="本の写真"
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain',
+                  }}
+                />
+              </Box>
+              <Box sx={{mt:3}}>
                 <Button variant="contained">
                   ファイルを選択
-                  <input
-                    type="file"
-                    accept=".png, .jpeg, .jpg"
-                    // onChange={OnFileUploadToFirebase}
-                  />
+                  <input type="file" accept=".png, .jpeg, .jpg" onChange={OnFileUploadToFirebase} />
                 </Button>
               </Box>
-            </Grid> */}
+            </Grid>
             <Grid item xs={8}>
               <Stack spacing={2}>
                 <Typography>タイトル</Typography>

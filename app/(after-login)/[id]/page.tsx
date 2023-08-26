@@ -14,6 +14,7 @@ import {
   getDocs,
   onSnapshot,
   setDoc,
+  updateDoc,
 } from 'firebase/firestore';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -24,6 +25,8 @@ import { CommentType } from '@/app/types/CommentType';
 export default function BookShow() {
   const [books, setBooks] = useState<BookType[]>([]);
   const [dataLoaded, setDataLoaded] = useState(false);
+  const [liked, setLiked] = useState<boolean>(false);
+
   const [comment, setComment] = useState<CommentType>({
     docId: '',
     text: '',
@@ -36,8 +39,6 @@ export default function BookShow() {
   const [comments, setComments] = useState<CommentType[]>([]);
 
   const { user } = useAuth();
-  console.log('ユーザー', user);
-
   const router = useRouter();
   const params = useParams();
   const bookId = params.id;
@@ -81,7 +82,6 @@ export default function BookShow() {
     try {
       if (deleteDocRef) {
         await deleteDoc(deleteDocRef);
-        // await deleteDoc(doc(db, 'books', bookId));
         console.log('削除されました');
         // 削除後のリダイレクト処理を追加
         router.push('/list');
@@ -125,7 +125,6 @@ export default function BookShow() {
       // 新しいコメントを保存する処理を追加
       await setDoc(newCommentRef, newComment)
         .then(() => {
-          // alert('コメント保存完了');
           resetInput();
           console.log('Document written with ID:', newComment.userId);
         })
@@ -170,7 +169,7 @@ export default function BookShow() {
           createdAt: data.createdAt,
         };
       });
-      console.log('リアルタイムコメント', updateComments);
+      // console.log('リアルタイムコメント', updateComments);
       setComments(updateComments);
     });
     return () => unsubscribe();
@@ -193,6 +192,7 @@ export default function BookShow() {
           point: data.point,
           picture: data.picture,
           createdAt: data.createdAt,
+          likeCount: data.likeCount,
         };
       });
       setBooks(fetchedBooks);
@@ -212,6 +212,7 @@ export default function BookShow() {
           point: data.point,
           picture: data.picture,
           createdAt: data.createdAt,
+          likeCount: data.likeCount,
         };
       });
       setBooks(updatedBooks);
@@ -239,6 +240,38 @@ export default function BookShow() {
     );
   }
 
+  const bookToShowLike = bookToShow?.likeCount || 0;
+  console.log('LikeCount', bookToShowLike);
+
+  const handleLikedClick = async () => {
+    if (bookToShow) {
+      const newLiked = !liked;
+      const newLikeCount = newLiked ? bookToShowLike + 1 : bookToShowLike - 1;
+      // const newLikeCount = bookToShowLike + (newLiked ? 1 : -1);
+
+      const bookDocRef = doc(db, 'books', bookToShow.docId);
+
+      try {
+        await updateDoc(bookDocRef, { likeCount: newLikeCount });
+
+        const updatedBooks = books.map((book) => {
+          if (book.docId === bookId) {
+            return {
+              ...book,
+              likeCount: book.docId === bookToShow.docId ? newLikeCount : book.likeCount,
+            };
+          }
+          return book;
+        });
+
+        setBooks(updatedBooks);
+        setLiked(newLiked);
+      } catch (error) {
+        console.error('Error updating like count:', error);
+      }
+    }
+  };
+
   return (
     <>
       <Box>
@@ -252,12 +285,37 @@ export default function BookShow() {
             <Box>ID:{bookToShow?.userId}</Box>
             <br />
             <Stack spacing={2}>
-              <img src={bookToShow?.picture} alt="本の写真" width="100%" height="50%" />
+              <Box sx={{ position: 'relative', paddingTop: '100%', overflow: 'hidden', mb: 3 }}>
+                <img
+                  src={bookToShow?.picture}
+                  alt="本の写真"
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain',
+                  }}
+                />
+              </Box>
               <Typography>タイトル：「{bookToShow?.title}」</Typography>
               <Typography>著者：「{bookToShow?.author}」</Typography>
               <Typography>ジャンル：「{bookToShow?.category}」</Typography>
               <Typography>⭐️おすすめポイント⭐️：「{bookToShow?.point}」</Typography>
-              <MenuBookTwoToneIcon fontSize="large" />
+
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  color: liked ? 'red' : 'inherit',
+                  cursor: 'pointer',
+                }}
+                onClick={handleLikedClick}
+              >
+                <MenuBookTwoToneIcon fontSize="large" />
+                <Typography ml={1}>{bookToShow?.likeCount}</Typography>
+              </Box>
 
               <Typography>
                 {bookToShow?.createdAt && bookToShow.createdAt.toDate().toLocaleString()}
@@ -306,7 +364,7 @@ export default function BookShow() {
                   marginBottom="10px"
                   key={comment.docId}
                 >
-                  {/* コメントの表示内容 */}
+                  {/* コメントの表示内容  */}
                   <Box sx={{ display: 'inline-flex', alignContent: 'center' }}>
                     <Avatar alt="" src={comment.userPhotoURL} />
                     <Typography fontSize={25}>{comment.userName}</Typography>

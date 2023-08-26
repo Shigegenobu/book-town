@@ -49,6 +49,7 @@ export default function SignUp() {
         photoURL: userCredential.user.photoURL,
         email: email,
         createdAt: Date.now(),
+        likeCount: 0,
       };
       await setDoc(userRef, appUser);
       console.log('ユーザーが作成されました');
@@ -130,8 +131,6 @@ export default function SignUp() {
         console.log(error);
       },
       () => {
-        // setLoading(false);
-        // setIsUploaded(true);
         getDownloadURL(uploadImage.snapshot.ref).then((downloadURL) => {
           console.log('File available at', downloadURL);
           setUserURL(downloadURL);
@@ -149,7 +148,7 @@ export default function SignUp() {
           <Stack spacing={2}>
             <p>イメージ画像（JpegかPngの画像ファイル）</p>
             <Stack direction="row" justifyContent="flex-start" spacing={2}>
-              <Avatar alt="" src="" />
+              <Avatar alt="" src={userURL} />
               <Button variant="contained">
                 <input type="file" accept=".png, .jpeg, .jpg" onChange={OnFileUploadToFirebase} />
               </Button>
