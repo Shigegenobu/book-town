@@ -1,7 +1,7 @@
 'use client';
 import { auth } from '@/app/service/firebase';
 import { Box, Button, Container, Grid, TextField } from '@mui/material';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -29,6 +29,7 @@ export default function SignIn() {
     <>
       <Container sx={{ width: '75%' }}>
         <h2>ログインページ</h2>
+
         <form onSubmit={handleSubmit}>
           <Box>
             <p>メールアドレス</p>
@@ -59,9 +60,13 @@ export default function SignIn() {
               </Button>
             </Grid>
 
-            {/* <Box sx={{ mt: 4 }}>
-            <GoogleButton />
-          </Box> */}
+            <Grid item xs={2}>
+              <Link href="/">
+                <Button size="large" variant="contained">
+                  homeへ戻る
+                </Button>
+              </Link>
+            </Grid>
 
             <Grid item xs={2}>
               <Link href="./signup">
@@ -71,7 +76,6 @@ export default function SignIn() {
           </Grid>
         </form>
       </Container>
-
     </>
   );
 }

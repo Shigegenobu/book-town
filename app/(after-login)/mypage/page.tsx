@@ -1,5 +1,5 @@
 'use client';
-import { Avatar, Box, Button, Container, Grid, Stack, Typography } from '@mui/material';
+import { Avatar, Box, Button, Container, Grid, Stack, TextField, Typography } from '@mui/material';
 import MenuBookTwoToneIcon from '@mui/icons-material/MenuBookTwoTone';
 
 import { signOut } from 'firebase/auth';
@@ -7,17 +7,43 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { auth, db } from '../../service/firebase';
 import { useAuth } from '@/app/context/auth';
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { BookType } from '@/app/types/BookType';
-import { collection, getDocs, onSnapshot } from 'firebase/firestore';
+import { collection, doc, getDocs, onSnapshot, updateDoc } from 'firebase/firestore';
 import CircularColor from '@/app/CircularColor';
 
 export default function Mypage() {
-  const [books, setBooks] = useState<BookType[]>([]);
-
   const router = useRouter();
   const { user, setUser } = useAuth();
   console.log(user);
+
+  const [books, setBooks] = useState<BookType[]>([]);
+  const [newName, setNewName] = useState('');
+
+  const userGetName = auth.currentUser?.displayName;
+  console.log(userGetName);
+  const userDocId = auth.currentUser?.uid;
+  console.log('aa', userDocId);
+
+  const handleNameChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setNewName(e.target.value);
+  };
+
+  const handleEditClick = async () => {
+    try {
+      if (!newName) {
+        alert('ユーザー名が未入力です');
+        return;
+      }
+      if (userDocId) {
+        const userNameRef = doc(db, 'users', userDocId);
+        await updateDoc(userNameRef, { name: newName });
+        console.log('更新ok');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleLogout = () => {
     signOut(auth)
@@ -84,6 +110,14 @@ export default function Mypage() {
     // console.log(books);
   }, [books]);
 
+  useEffect(() => {
+    setNewName(userGetName || '');
+  }, []);
+
+  useEffect(() => {
+    setNewName(user?.name || '');
+  }, [user]);
+
   if (user === undefined) {
     return (
       <>
@@ -95,14 +129,16 @@ export default function Mypage() {
 
   return (
     <>
-      <Box>Mypage</Box>
-
-      <Container>
-        <Box>ログイン中の人しか見れないページ</Box>
+      <Container sx={{mt:3}}>
         <Avatar alt="" src={user?.photoURL} />
         <Box>
           <Typography sx={{ fontWeight: 'bold', color: 'orange' }}>名前</Typography>
-          <Typography>{user?.name}</Typography>
+          <Box display="flex">
+            <TextField autoComplete="off" value={newName} onChange={(e) => handleNameChange(e)} />
+            <Button variant="contained" onClick={handleEditClick} sx={{ ml: 3 }}>
+              更新
+            </Button>
+          </Box>
         </Box>
 
         <Box sx={{ mt: 3 }}>

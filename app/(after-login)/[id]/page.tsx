@@ -274,8 +274,7 @@ export default function BookShow() {
 
   return (
     <>
-      <Box>
-        <Box>詳細ページ</Box>
+      <Box mt={3}>
         <Container>
           <Box border="1px solid #ccc" borderRadius="5px" padding="10px" marginBottom="10px">
             <Box sx={{ display: 'inline-flex', alignContent: 'center' }}>
