@@ -137,8 +137,7 @@ export default function List() {
 
   return (
     <>
-      <Container>
-        <h1>このページに投稿された内容が入る予定</h1>
+      <Container sx={{mt:3}}>
         <Box sx={{ display: 'flex', alignContent: 'center' }}>
           <Typography mr={3} sx={{ display: 'inline-block', width: '150px' }}>
             タイトルで絞り込む

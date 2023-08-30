@@ -122,6 +122,7 @@ export default function BookEdit({ searchParams }: { searchParams: { id: string 
   const handleSaveClick = async () => {
     if (!newTitle || !newAuthor || !newCategory || !newPoint) {
       alert('「タイトルor著者orジャンルor⭐️おすすめポイント⭐️」が未入力です。');
+      return;
     }
 
     try {
@@ -178,7 +179,6 @@ export default function BookEdit({ searchParams }: { searchParams: { id: string 
   return (
     <>
       <Box>
-        <Box>編集ページ</Box>
         <Container>
           <Grid container spacing={2} mt={10} alignContent="center">
             <Grid item xs={4}>
@@ -198,7 +198,7 @@ export default function BookEdit({ searchParams }: { searchParams: { id: string 
                   }}
                 />
               </Box>
-              <Box sx={{mt:3}}>
+              <Box sx={{ mt: 3 }}>
                 <Button variant="contained">
                   ファイルを選択
                   <input type="file" accept=".png, .jpeg, .jpg" onChange={OnFileUploadToFirebase} />

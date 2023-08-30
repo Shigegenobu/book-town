@@ -205,6 +205,14 @@ export default function SignUp() {
               </Button>
             </Grid>
 
+            <Grid item xs={3}>
+              <Link href="/">
+                <Button size="large" variant="contained">
+                  homeへ戻る
+                </Button>
+              </Link>
+            </Grid>
+
             <Grid item xs={2}>
               <Link href="/signin">
                 <Button variant="contained">ログインへ</Button>
@@ -213,8 +221,6 @@ export default function SignUp() {
           </Grid>
         </form>
       </Container>
-
-      <Link href="/">homeへ戻る</Link>
     </>
   );
 }
