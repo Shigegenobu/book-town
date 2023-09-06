@@ -5,8 +5,9 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { BookType } from '@/app/types/BookType';
 import { auth, db } from '@/app/service/firebase';
-import { collection, getDocs, onSnapshot, query, setDoc } from 'firebase/firestore';
+import { collection, getDocs, onSnapshot } from 'firebase/firestore';
 import CircularColor from '@/app/CircularColor';
+import SearchIcon from '@mui/icons-material/Search';
 
 export default function List() {
   const [books, setBooks] = useState<BookType[]>([]);
@@ -15,7 +16,6 @@ export default function List() {
   const [filterTitle, setFilterTitle] = useState('');
   const [filterAuthor, setFilterAuthor] = useState<string>('');
   const [filterUserId, setFilterUserId] = useState<string>('');
-  const [count, setCount] = useState(0);
 
   const userId = auth.currentUser?.uid;
   console.log('userId', userId);
@@ -30,10 +30,11 @@ export default function List() {
     setSortLikedeDirection((prevlikedDirection) => (prevlikedDirection === 'asc' ? 'desc' : 'asc'));
   };
 
+  //絞り込み機能
   const filteredBooks = books.filter((book) => {
     const matchesTitle = book.title.toLowerCase().includes(filterTitle.toLowerCase());
     const matchesAuthor = book.author.toLowerCase().includes(filterAuthor.toLowerCase());
-    const matchesUserId = book.userId.toLowerCase().includes(filterUserId.toLowerCase());
+    const matchesUserId = book.userName.toLowerCase().includes(filterUserId.toLowerCase());
 
     return matchesAuthor && matchesUserId && matchesTitle;
   });
@@ -129,73 +130,87 @@ export default function List() {
   if (!dataLoaded) {
     return (
       <>
-        Loading...
-        <CircularColor />
+        <Container
+          sx={{
+            mt: 3,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '100vh',
+          }}
+        >
+          <Box>ローディング中...</Box>
+          <CircularColor />
+        </Container>
       </>
     );
   }
 
   return (
     <>
-      <Container sx={{mt:3}}>
-        <Box sx={{ display: 'flex', alignContent: 'center' }}>
-          <Typography mr={3} sx={{ display: 'inline-block', width: '150px' }}>
-            タイトルで絞り込む
-          </Typography>
-          <TextField
-            autoComplete="off"
-            value={filterTitle}
-            onChange={(e) => setFilterTitle(e.target.value)}
-          />
-        </Box>
-        <Box sx={{ display: 'flex', alignContent: 'center', mt: 3 }}>
-          <Typography mr={3} sx={{ display: 'inline-block', width: '150px' }}>
-            著者で絞り込む
-          </Typography>
-          <TextField
-            autoComplete="off"
-            value={filterAuthor}
-            onChange={(e) => setFilterAuthor(e.target.value)}
-          />
-        </Box>
-        <Box sx={{ display: 'flex', alignContent: 'center', mt: 3 }}>
-          <Typography mr={3} sx={{ display: 'inline-block', width: '150px' }}>
-            IDで絞り込む
-          </Typography>
-          <TextField
-            autoComplete="off"
-            value={filterUserId}
-            onChange={(e) => setFilterUserId(e.target.value)}
-          />
+      <Container sx={{ mt: 3 }}>
+        <Box sx={{ display: 'flex' }}>
+          <Box sx={{ display: 'flex', alignContent: 'center' }}>
+            <Typography mr={3} sx={{ display: 'inline-block', width: '150px' }}>
+              <SearchIcon />
+              タイトルで検索
+            </Typography>
+            <TextField
+              autoComplete="off"
+              value={filterTitle}
+              onChange={(e) => setFilterTitle(e.target.value)}
+            />
+          </Box>
+          <Box sx={{ display: 'flex', alignContent: 'center' }}>
+            <Typography mr={3} sx={{ display: 'inline-block', width: '150px', ml: 3 }}>
+              <SearchIcon />
+              著者で検索
+            </Typography>
+            <TextField
+              autoComplete="off"
+              value={filterAuthor}
+              onChange={(e) => setFilterAuthor(e.target.value)}
+            />
+          </Box>
+          <Box sx={{ display: 'flex', alignContent: 'center' }}>
+            <Typography mr={3} sx={{ display: 'inline-block', width: '150px', ml: 3 }}>
+              <SearchIcon />
+              投稿者名で検索
+            </Typography>
+            <TextField
+              autoComplete="off"
+              value={filterUserId}
+              onChange={(e) => setFilterUserId(e.target.value)}
+            />
+          </Box>
         </Box>
 
-        <Box sx={{ my: 2, display: 'flex', justifyContent: 'space-evenly', width: 300 }}>
-          <Box>
-            <Button variant="contained" onClick={() => handleSortDateClick()}>
-              {sortDateDirection === 'asc' ? '最新順に' : '古い順に'}
-            </Button>
-          </Box>
-          <Box>
-            <Button variant="contained" onClick={handleSortLikedClick}>
-              📕 {sortLikedDirection === 'asc' ? 'いい本多い順に' : 'いい本少ない順に'}
-            </Button>
-          </Box>
-        </Box>
-        <Box>
-          <Grid container justifyContent="space-between" spacing={2} mt={2}>
-            <Grid item></Grid>
-            <Grid item>
-              <Link href="./create/">
-                <Button variant="contained" size="large" color="warning">
-                  投稿する
+        <Grid container justifyContent="space-between" spacing={2} mt={2}>
+          <Grid item>
+            <Box sx={{ my: 2, display: 'flex', justifyContent: 'space-evenly', width: 300 }}>
+              <Box>
+                <Button variant="contained" onClick={() => handleSortDateClick()}>
+                  {sortDateDirection === 'asc' ? '最新順に' : '古い順に'}
                 </Button>
-              </Link>
-            </Grid>
+              </Box>
+              <Box>
+                <Button variant="contained" onClick={handleSortLikedClick}>
+                  📕 {sortLikedDirection === 'asc' ? 'いい本多い順に' : 'いい本少ない順に'}
+                </Button>
+              </Box>
+            </Box>
           </Grid>
-        </Box>
+          <Grid item>
+            <Link href="./create/">
+              <Button variant="contained" size="large" color="warning">
+                投稿する
+              </Button>
+            </Link>
+          </Grid>
+        </Grid>
 
         <ul>
-          <Grid container spacing={2} justifyContent="center">
+          <Grid container spacing={2} justifyContent="flex-start">
             {filteredBooks.map((book) => (
               <Grid item xs={12} sm={6} md={4} key={book.docId}>
                 {/* <Link href={`/${book.userId}/`} style={{ textDecoration: 'none', color: 'black' }}> */}
@@ -210,8 +225,8 @@ export default function List() {
                       <Avatar alt="" src={book.userPhotoURL} />
                       <Typography fontSize={25}>{book.userName}</Typography>
                     </Box>
-                    <Box sx={{ fontSize: 3 }}>ID:{book.userId}</Box>
-                    <br />
+                    {/* <Box sx={{ fontSize: 3 }}>ID:{book.userId}</Box>
+                    <br /> */}
                     <Box
                       sx={{ position: 'relative', paddingTop: '100%', overflow: 'hidden', mb: 3 }}
                     >
@@ -244,9 +259,11 @@ export default function List() {
                         sx={{
                           display: 'flex',
                           alignItems: 'center',
+                          fontSize: 'small',
                         }}
                       >
                         <MenuBookTwoToneIcon fontSize="large" />
+                        いいね
                         <Typography ml={1}>{book.likeCount}</Typography>
                       </Box>
 

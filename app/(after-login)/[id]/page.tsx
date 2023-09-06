@@ -2,6 +2,7 @@
 import { Avatar, Box, Button, Container, Grid, Stack, TextField, Typography } from '@mui/material';
 import MenuBookTwoToneIcon from '@mui/icons-material/MenuBookTwoTone';
 
+
 import Link from 'next/link';
 import { BookType } from '@/app/types/BookType';
 import { db } from '@/app/service/firebase';
@@ -309,10 +310,11 @@ export default function BookShow() {
                   alignItems: 'center',
                   color: liked ? 'red' : 'inherit',
                   cursor: 'pointer',
+                  fontSize:'small'
                 }}
                 onClick={handleLikedClick}
               >
-                <MenuBookTwoToneIcon fontSize="large" />
+                <MenuBookTwoToneIcon fontSize="large" />いいね
                 <Typography ml={1}>{bookToShow?.likeCount}</Typography>
               </Box>
 
