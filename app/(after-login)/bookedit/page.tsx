@@ -181,9 +181,8 @@ export default function BookEdit({ searchParams }: { searchParams: { id: string 
       <Box>
         <Container>
           <Grid container spacing={2} mt={10} alignContent="center">
-            <Grid item xs={4}>
+            <Grid item xs={12} sm={4}>
               <h2>画像アップローダー</h2>
-              {/* <Box>{newPicture}</Box> */}
               <Box sx={{ position: 'relative', paddingTop: '100%', overflow: 'hidden' }}>
                 <img
                   src={newPicture}
@@ -200,12 +199,11 @@ export default function BookEdit({ searchParams }: { searchParams: { id: string 
               </Box>
               <Box sx={{ mt: 3 }}>
                 <Button variant="contained">
-                  ファイルを選択
                   <input type="file" accept=".png, .jpeg, .jpg" onChange={OnFileUploadToFirebase} />
                 </Button>
               </Box>
             </Grid>
-            <Grid item xs={8}>
+            <Grid item xs={12} sm={8}>
               <Stack spacing={2}>
                 <Typography>タイトル</Typography>
                 <TextField
