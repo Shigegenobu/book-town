@@ -2,7 +2,6 @@
 import { Avatar, Box, Button, Container, Grid, Stack, TextField, Typography } from '@mui/material';
 import MenuBookTwoToneIcon from '@mui/icons-material/MenuBookTwoTone';
 
-
 import Link from 'next/link';
 import { BookType } from '@/app/types/BookType';
 import { db } from '@/app/service/firebase';
@@ -12,22 +11,25 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDoc,
   getDocs,
   onSnapshot,
+  query,
   setDoc,
-  updateDoc,
 } from 'firebase/firestore';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/auth';
 import CircularColor from '@/app/CircularColor';
 import { CommentType } from '@/app/types/CommentType';
+import { LikedUser } from '@/app/types/LikedUser';
 
 export default function BookShow() {
   const [books, setBooks] = useState<BookType[]>([]);
   const [dataLoaded, setDataLoaded] = useState(false);
   const [liked, setLiked] = useState<boolean>(false);
-
+  const [likedUser, setLikedUser] = useState<LikedUser[]>([]);
+  const [likeCount, setLikeCount] = useState(0);
   const [comment, setComment] = useState<CommentType>({
     docId: '',
     text: '',
@@ -43,13 +45,13 @@ export default function BookShow() {
   const router = useRouter();
   const params = useParams();
   const bookId = params.id;
-  // console.log('ブック', bookId);
 
   const bookToShow = books.find((book) => book.docId === bookId);
-  console.log('bookToShow', bookToShow);
+  // console.log('bookToShow', bookToShow);
 
   //idが同じならbooks編集・削除できる
   const canEdit = user && bookToShow && user.id === bookToShow?.userId;
+  // console.log('canEdit', canEdit);
 
   const handleCommentChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     console.log(e.target.value);
@@ -63,28 +65,24 @@ export default function BookShow() {
   const handleDeleteComment = async (commentId: string) => {
     try {
       const commentDocRef = doc(db, 'comments', commentId);
-      // if (commentDocRef) {
       await deleteDoc(commentDocRef);
       console.log('コメントが削除されました');
-      // }
     } catch (error) {
       console.log(error);
     }
   };
 
-  let deleteDocRef: DocumentReference | undefined; // doc()関数のための変数を宣言
-
+  //bookを削除する
+  let deleteDocRef: DocumentReference | undefined;
   if (bookToShow) {
     deleteDocRef = doc(db, 'books', bookToShow.docId);
   }
 
-  //bookを削除する
   const handleDeleteClick = async () => {
     try {
       if (deleteDocRef) {
         await deleteDoc(deleteDocRef);
         console.log('削除されました');
-        // 削除後のリダイレクト処理を追加
         router.push('/list');
       }
     } catch (error) {
@@ -110,9 +108,7 @@ export default function BookShow() {
       alert('コメントが空です');
       return;
     }
-
     const newCommentRef = doc(collection(db, 'comments'));
-    //ユーザーidの読み込みに成功したら処理が進む
     if (bookToShow) {
       const newComment: CommentType = {
         docId: comment.docId,
@@ -136,6 +132,37 @@ export default function BookShow() {
       alert('投稿先の本が見つかりません');
     }
   };
+
+  useEffect(() => {
+    //firebaseからいいねを取得
+    const likedUserRef = collection(db, 'books', bookId, 'LikedUsers');
+    getDocs(likedUserRef).then((snapShot) => {
+      const fetchLikedUsers = snapShot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          docId: doc.id,
+          userId: data.userId,
+          createdAt: data.createdAt,
+        };
+      });
+      setLikedUser(fetchLikedUsers);
+      // console.log('fetchLikedUsers', fetchLikedUsers);
+    });
+
+    const unsubscribe = onSnapshot(likedUserRef, (likedUser) => {
+      const updateLikedUsers = likedUser.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          docId: doc.id,
+          userId: data.userId,
+          createdAt: data.createdAt,
+        };
+      });
+      console.log('リアルタイムいいね', updateLikedUsers);
+      setLikedUser(updateLikedUsers);
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     //firebaseからデータを取得(comments)
@@ -198,6 +225,7 @@ export default function BookShow() {
       });
       setBooks(fetchedBooks);
     });
+
     // リアルタイムで取得(books)
     const unsubscribe = onSnapshot(bookData, (book) => {
       const updatedBooks = book.docs.map((doc) => {
@@ -223,55 +251,114 @@ export default function BookShow() {
   }, []);
 
   useEffect(() => {
-    console.log(books);
-  }, [books]);
-
-  useEffect(() => {
     // データが取得されたら、setDataLoaded(true) を呼ぶ
     setDataLoaded(true);
   }, []);
+
+  //サブコレクションの合計数取得
+  useEffect(() => {
+    if (bookToShow) {
+      const likedUserRef = collection(db, 'books', bookToShow.docId, 'LikedUsers');
+      const likedUserQuery = query(likedUserRef);
+
+      getDocs(likedUserQuery).then((querySnapshot) => {
+        setLikeCount(querySnapshot.size);
+        // console.log('サブコレクション数', querySnapshot.size);
+      });
+    }
+  }, [bookToShow]);
+
+  const handleToggleLike = async () => {
+    if (bookToShow) {
+      const likedUserRef = doc(db, 'books', bookToShow.docId, 'LikedUsers', user.id);
+
+      try {
+        const likedUserSnapshot = await getDoc(likedUserRef);
+
+        if (likedUserSnapshot.exists()) {
+          // すでにいいねしている場合、取り消す
+          await deleteDoc(likedUserRef);
+
+          // いいねの状態をlocalStorageから削除
+          localStorage.removeItem(`liked_${bookToShow.docId}`);
+        } else {
+          // いいねしていない場合、いいねする
+          const newLikedUser = {
+            createdAt: Timestamp.now(),
+            userId: user.id,
+          };
+          await setDoc(likedUserRef, newLikedUser);
+
+          // いいねの状態をlocalStorageに保存
+          localStorage.setItem(`liked_${bookToShow.docId}`, 'true');
+        }
+
+        // いいねの状態を更新
+        setLiked(!liked);
+
+        //更新時のサブコレクション内の合計数を取得し、likeCount を更新
+        const likedUserQuery = query(collection(db, 'books', bookToShow.docId, 'LikedUsers'));
+        const querySnapshot = await getDocs(likedUserQuery);
+        setLikeCount(querySnapshot.size);
+        console.log('サブコレクション数', querySnapshot.size);
+      } catch (error) {
+        console.error('Error toggling like:', error);
+      }
+    }
+  };
+
+  //いいねの状態がlocalStorageに保存されていればセットする
+  useEffect(() => {
+    if (bookToShow) {
+      const likeStatus = localStorage.getItem(`liked_${bookToShow.docId}`);
+      // いいねの状態がlocalStorageに保存されていれば、それをセットする
+      if (likeStatus === 'true') {
+        setLiked(true);
+      } else {
+        setLiked(false);
+      }
+    }
+  }, [bookToShow]);
+
+  // 初期いいねの状態はローカルストレージから取得する
+  useEffect(() => {
+    if (bookToShow && user) {
+      const likedUserRef = doc(db, 'books', bookToShow.docId, 'LikedUsers', user.id);
+
+      // likedUserRef をもとにいいねの存在を確認
+      getDoc(likedUserRef)
+        .then((likedUserSnapshot) => {
+          if (likedUserSnapshot.exists()) {
+            setLiked(true);
+          } else {
+            setLiked(false);
+          }
+        })
+        .catch((error) => {
+          console.error('Error checking like status:', error);
+        });
+    }
+  }, [bookToShow, user]);
 
   //ローディング中表示
   if (!dataLoaded) {
     return (
       <>
-        Loading...
-        <CircularColor />
+        <Container
+          sx={{
+            mt: 3,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '100vh',
+          }}
+        >
+          <Box>ローディング中...</Box>
+          <CircularColor />
+        </Container>
       </>
     );
   }
-
-  const bookToShowLike = bookToShow?.likeCount || 0;
-  console.log('LikeCount', bookToShowLike);
-
-  const handleLikedClick = async () => {
-    if (bookToShow) {
-      const newLiked = !liked;
-      const newLikeCount = newLiked ? bookToShowLike + 1 : bookToShowLike - 1;
-      // const newLikeCount = bookToShowLike + (newLiked ? 1 : -1);
-
-      const bookDocRef = doc(db, 'books', bookToShow.docId);
-
-      try {
-        await updateDoc(bookDocRef, { likeCount: newLikeCount });
-
-        const updatedBooks = books.map((book) => {
-          if (book.docId === bookId) {
-            return {
-              ...book,
-              likeCount: book.docId === bookToShow.docId ? newLikeCount : book.likeCount,
-            };
-          }
-          return book;
-        });
-
-        setBooks(updatedBooks);
-        setLiked(newLiked);
-      } catch (error) {
-        console.error('Error updating like count:', error);
-      }
-    }
-  };
 
   return (
     <>
@@ -282,8 +369,6 @@ export default function BookShow() {
               <Avatar alt="" src={bookToShow?.userPhotoURL} />
               <Typography fontSize={25}>{bookToShow?.userName}</Typography>
             </Box>
-            <Box>ID:{bookToShow?.userId}</Box>
-            <br />
             <Stack spacing={2}>
               <Box sx={{ position: 'relative', paddingTop: '100%', overflow: 'hidden', mb: 3 }}>
                 <img
@@ -310,12 +395,13 @@ export default function BookShow() {
                   alignItems: 'center',
                   color: liked ? 'red' : 'inherit',
                   cursor: 'pointer',
-                  fontSize:'small'
+                  fontSize: 'small',
                 }}
-                onClick={handleLikedClick}
+                onClick={handleToggleLike}
               >
-                <MenuBookTwoToneIcon fontSize="large" />いいね
-                <Typography ml={1}>{bookToShow?.likeCount}</Typography>
+                <MenuBookTwoToneIcon fontSize="large" />
+                いいね
+                <Typography ml={1}>{likeCount}</Typography>
               </Box>
 
               <Typography>
@@ -333,7 +419,7 @@ export default function BookShow() {
             </Grid>
 
             <Grid item xs={2}>
-              {canEdit && ( // ログインユーザーが編集可能な場合のみ表示
+              {canEdit && (
                 <>
                   <Link href={`/bookedit?id=${bookId}`}>
                     <Button variant="contained">編集ページへ</Button>
@@ -370,7 +456,6 @@ export default function BookShow() {
                     <Avatar alt="" src={comment.userPhotoURL} />
                     <Typography fontSize={25}>{comment.userName}</Typography>
                   </Box>
-                  <Box sx={{ fontSize: 3 }}>ID:{comment.userId}</Box>
                   <br />
                   <Typography fontSize={25}>{comment.text}</Typography>
 

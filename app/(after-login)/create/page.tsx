@@ -20,7 +20,6 @@ import { BookType } from '@/app/types/BookType';
 import { Timestamp, collection, doc, setDoc } from 'firebase/firestore';
 import { useAuth } from '@/app/context/auth';
 import { useRouter } from 'next/navigation';
-import { Center } from '@chakra-ui/react';
 
 export default function Create() {
   const [book, setBook] = useState<BookType>({

@@ -3,28 +3,23 @@ import { Avatar, Box, Button, Container, Grid, Stack, TextField, Typography } fr
 import MenuBookTwoToneIcon from '@mui/icons-material/MenuBookTwoTone';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { auth, db } from '../../service/firebase';
 import { useAuth } from '@/app/context/auth';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { BookType } from '@/app/types/BookType';
-import { collection, doc, getDocs, onSnapshot, updateDoc } from 'firebase/firestore';
+import { collection, doc, getDocs, onSnapshot, updateDoc, writeBatch } from 'firebase/firestore';
 import CircularColor from '@/app/CircularColor';
+import { updateProfile } from 'firebase/auth';
 
 export default function Mypage() {
-  const router = useRouter();
-  const { user, setUser } = useAuth();
-  console.log(user);
+  const { user } = useAuth();
 
   const [books, setBooks] = useState<BookType[]>([]);
   const [newName, setNewName] = useState('');
-
   const [userBooks, setUserBooks] = useState<BookType[]>([]);
 
   const userGetName = auth.currentUser?.displayName;
-  console.log(userGetName);
   const userDocId = auth.currentUser?.uid;
-  console.log('aa', userDocId);
 
   useEffect(() => {
     // ログインユーザーの投稿だけを取得
@@ -43,12 +38,50 @@ export default function Mypage() {
         return;
       }
       if (userDocId) {
-        const userNameRef = doc(db, 'users', userDocId);
-        await updateDoc(userNameRef, { name: newName });
-        console.log('更新ok');
+        console.log('データの書き込み前:', userDocId, userGetName);
+
+        // usersコレクションのユーザー名を更新
+        const userRef = doc(db, 'users', userDocId);
+        await updateDoc(userRef, { name: newName });
+
+        // Firebase 認証ユーザーの表示名を更新
+        const currentUser = auth.currentUser;
+        if (currentUser) {
+          updateProfile(currentUser, {
+            displayName: newName,
+          })
+            .then(() => {
+              console.log('認証ユーザーの表示名更新成功');
+            })
+            .catch((error: any) => {
+              console.log(error);
+            });
+        } else {
+          // ユーザーがログインしていない場合のエラーハンドリング
+          console.error('ユーザーがログインしていません');
+        }
+
+        // booksコレクション内のuserNameフィールドも更新
+        const booksQuerySnapshot = await getDocs(collection(db, 'books'));
+        const batch = writeBatch(db);
+
+        booksQuerySnapshot.docs.map((doc) => {
+          const bookData = doc.data();
+          if (bookData.userId === userDocId) {
+            // ログインユーザーの本のuserNameを更新
+            const bookRef = doc.ref;
+            batch.update(bookRef, { userName: newName });
+          }
+        });
+
+        // バッチで更新をコミット
+        await batch.commit();
+
+        console.log('データの書き込み後:', userDocId, newName);
+        console.log('更新されました');
       }
     } catch (error) {
-      console.log(error);
+      console.error('データの書き込みエラー:', error);
     }
   };
 
@@ -58,7 +91,6 @@ export default function Mypage() {
     getDocs(bookData).then((snapShot) => {
       const fetchedBooks = snapShot.docs.map((doc) => {
         const data = doc.data();
-        // console.log(data);
         return {
           docId: doc.id,
           userId: data.userId,
@@ -94,13 +126,34 @@ export default function Mypage() {
           likeCount: data.likeCount,
         };
       });
-      // setBooks(updatedBooks);
+      setBooks(updatedBooks);
       console.log(updatedBooks);
     });
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {}, [books]);
+  useEffect(() => {
+    // ユーザーが投稿した本を取得
+    const userBookData = books.filter((book) => book.docId);
+
+    // 各本に対していいねの数を取得
+    Promise.all(
+      userBookData.map(async (book) => {
+        const likedUserRef = collection(db, 'books', book.docId, 'LikedUsers');
+        const querySnapshot = await getDocs(likedUserRef);
+        // console.log('サブコレクション数', querySnapshot.size);
+        book.likeCount = querySnapshot.size;
+        return book;
+      })
+    )
+      .then((updatedUserBooks) => {
+        // すべての非同期処理が完了した後に更新されたユーザーの本のリストをセットする
+        setUserBooks(updatedUserBooks);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [books]);
 
   useEffect(() => {
     setNewName(userGetName || '');
@@ -184,17 +237,6 @@ export default function Mypage() {
           <Grid container spacing={2} justifyContent="flex-start" sx={{ mt: 8 }}>
             {userBooks.length === 0 ? (
               <Grid item xs={12} sx={{ textAlign: 'center' }}>
-                {/* <Typography
-                  variant="h4"
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    // minHeight: '100vh',
-                  }}
-                >
-                  投稿はありません
-                </Typography> */}
                 <Box
                   border="1px solid #ccc"
                   borderRadius="5px"
@@ -264,8 +306,16 @@ export default function Mypage() {
                             mt: 3,
                           }}
                         >
-                          <MenuBookTwoToneIcon fontSize="large" />
-
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              fontSize: 'small',
+                            }}
+                          >
+                            <MenuBookTwoToneIcon fontSize="large" />
+                            <Typography ml={1}>{book.likeCount}</Typography>
+                          </Box>
                           <Typography>
                             {book.createdAt && book.createdAt.toDate().toLocaleString()}
                           </Typography>

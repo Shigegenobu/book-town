@@ -32,7 +32,6 @@ export default function SignUp() {
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     try {
-      // Firebase Authenticationを使用して、メールとパスワードで新しいユーザーを作成
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 
       // Firebase Authenticationを使用して、ユーザーの表示名を更新
@@ -85,7 +84,6 @@ export default function SignUp() {
   };
 
   // FirebaseAuthErrorの型ガードを定義
-  //errorオブジェクトがobject型であり、nullではなく、codeプロパティを持つ場合にのみスイッチ文の中に入る
   function isFirebaseAuthError(error: unknown): error is FirebaseAuthError {
     return (
       typeof error === 'object' &&
@@ -107,7 +105,6 @@ export default function SignUp() {
   };
 
   const OnFileUploadToFirebase = (e: { target: { files: any } }) => {
-    // console.log(e.target.files[0].name);
     const file = e.target.files[0];
     const storageRef = ref(storage, file.name);
     const uploadImage = uploadBytesResumable(storageRef, file);
@@ -117,7 +114,6 @@ export default function SignUp() {
       (snapshot) => {
         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         console.log('Upload is ' + progress + '% done');
-        // setLoading(true);
         switch (snapshot.state) {
           case 'paused':
             console.log('Upload is paused');

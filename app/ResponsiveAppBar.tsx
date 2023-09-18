@@ -69,8 +69,6 @@ function ResponsiveAppBar() {
             📖BOOKTOWN📖
           </Typography>
 
-          {/* <Avatar alt="" src={user?.photoURL} /> */}
-
           <Box
             sx={{ flexGrow: 0, height: '80px' }}
             display={'flex'}
@@ -118,7 +116,7 @@ function ResponsiveAppBar() {
                   >
                     <Typography
                       textAlign="center"
-                      sx={{ padding: '8px'}}
+                      sx={{ padding: '8px' }}
                       onClick={() => console.log('Link clicked')}
                     >
                       {setting}

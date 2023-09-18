@@ -1,7 +1,7 @@
 'use client';
 import { auth } from '@/app/service/firebase';
 import { Box, Button, Container, Grid, TextField } from '@mui/material';
-import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
