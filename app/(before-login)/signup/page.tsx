@@ -195,23 +195,23 @@ export default function SignUp() {
           </Stack>
 
           <Grid container justifyContent="space-between" spacing={2} mt={2}>
-            <Grid item xs={2}>
+            <Grid item>
               <Button variant="contained" size="large" type="submit">
                 新規登録
               </Button>
             </Grid>
 
-            <Grid item xs={3}>
+            <Grid item>
               <Link href="/">
                 <Button size="large" variant="contained">
-                  homeへ戻る
+                  HOME
                 </Button>
               </Link>
             </Grid>
 
-            <Grid item xs={2}>
+            <Grid item>
               <Link href="/signin">
-                <Button variant="contained">ログインへ</Button>
+                <Button variant="contained">ログイン</Button>
               </Link>
             </Grid>
           </Grid>
