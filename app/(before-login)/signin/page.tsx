@@ -54,23 +54,23 @@ export default function SignIn() {
           </Box>
 
           <Grid container justifyContent="space-between" spacing={2} mt={2}>
-            <Grid item xs={2}>
+            <Grid item>
               <Button variant="contained" type="submit">
                 ログイン
               </Button>
             </Grid>
 
-            <Grid item xs={2}>
-              <Link href="/">
-                <Button size="large" variant="contained">
-                  homeへ戻る
-                </Button>
+            <Grid item>
+              <Link href="./signup">
+                <Button variant="contained"> 新規登録</Button>
               </Link>
             </Grid>
 
-            <Grid item xs={2}>
-              <Link href="./signup">
-                <Button variant="contained"> 新規登録はこちらから</Button>
+            <Grid item>
+              <Link href="/">
+                <Button size="large" variant="contained">
+                  HOME
+                </Button>
               </Link>
             </Grid>
           </Grid>
