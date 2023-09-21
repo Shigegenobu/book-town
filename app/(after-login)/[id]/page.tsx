@@ -54,7 +54,7 @@ export default function BookShow() {
   // console.log('canEdit', canEdit);
 
   const handleCommentChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    console.log(e.target.value);
+    // console.log(e.target.value);
     setComment((prevComment) => ({
       ...prevComment,
       text: e.target.value,
@@ -158,7 +158,7 @@ export default function BookShow() {
           createdAt: data.createdAt,
         };
       });
-      console.log('リアルタイムいいね', updateLikedUsers);
+      // console.log('リアルタイムいいね', updateLikedUsers);
       setLikedUser(updateLikedUsers);
     });
     return () => unsubscribe();
@@ -409,8 +409,13 @@ export default function BookShow() {
               </Typography>
             </Stack>
           </Box>
-          <Grid container justifyContent="space-between" spacing={2} mt={2}>
-            <Grid item xs={3}>
+
+          <Grid
+            container
+            justifyContent="space-between"
+            sx={{ display: 'flex', alignItems: 'center' }}
+          >
+            <Grid item>
               <Link href="./list">
                 <Button variant="contained" size="large">
                   一覧へ
@@ -418,7 +423,7 @@ export default function BookShow() {
               </Link>
             </Grid>
 
-            <Grid item xs={2}>
+            <Grid item sx={{ display: 'flex', alignItems: 'center' }}>
               {canEdit && (
                 <>
                   <Link href={`/bookedit?id=${bookId}`}>
@@ -428,7 +433,7 @@ export default function BookShow() {
                     variant="contained"
                     size="large"
                     color="error"
-                    sx={{ my: 3 }}
+                    sx={{ ml: 3 }}
                     onClick={() => handleDeleteClick()}
                   >
                     削除

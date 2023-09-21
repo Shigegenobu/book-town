@@ -13,7 +13,7 @@ import {
   TextField,
 } from '@mui/material';
 import Link from 'next/link';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { db, storage } from '@/app/service/firebase';
 import { BookType } from '@/app/types/BookType';
@@ -38,7 +38,7 @@ export default function Create() {
 
   const router = useRouter();
   const { user } = useAuth();
-  console.log('ユーザー', user);
+  // console.log('ユーザー', user);
 
   const OnFileUploadToFirebase = (e: { target: { files: any } }) => {
     // console.log(e.target.files[0].name);
@@ -165,7 +165,7 @@ export default function Create() {
       <Box>
         <Container>
           <Grid container spacing={2} mt={10} alignItems="Center">
-            <Grid item xs={4}>
+            <Grid item sm={4}>
               <h2>画像アップローダー</h2>
               <Box sx={{ position: 'relative', paddingTop: '100%', overflow: 'hidden' }}>
                 <img
@@ -182,14 +182,13 @@ export default function Create() {
               </Box>
 
               <Box>
-                <Button variant="contained">
-                  ファイルを選択
+                <Button variant="contained" sx={{ fontSize: 'small', p: 1 }}>
                   <input type="file" accept=".png, .jpeg, .jpg" onChange={OnFileUploadToFirebase} />
                 </Button>
               </Box>
             </Grid>
-            <Grid item xs={8}>
-              <Stack spacing={10}>
+            <Grid item sm={8}>
+              <Stack spacing={10} sx={{ width: '100%' }}>
                 <TextField
                   label="タイトルを入力して下さい"
                   variant="standard"
@@ -237,25 +236,26 @@ export default function Create() {
               />
             </Stack>
           </Box>
+
+          <Grid container justifyContent="space-between" spacing={2} mt={2}>
+            <Grid item>
+              <Button variant="contained" size="large" color="warning" onClick={handleClick}>
+                投稿
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button variant="contained" onClick={handleResetClick}>
+                リセット
+              </Button>
+            </Grid>
+            <Grid item>
+              <Link href="./list">
+                <Button variant="contained">一覧へ</Button>
+              </Link>
+            </Grid>
+          </Grid>
         </Container>
       </Box>
-
-      <Box>
-        <Button variant="contained" size="large" color="warning" onClick={handleClick}>
-          投稿
-        </Button>
-      </Box>
-
-      <Box sx={{ mt: 4 }}>
-        <Button variant="contained" onClick={handleResetClick}>
-          リセット
-        </Button>
-      </Box>
-      <Link href="./list">
-        <Button variant="contained" sx={{ mt: 4 }}>
-          一覧へ戻る
-        </Button>
-      </Link>
     </>
   );
 }

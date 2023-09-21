@@ -8,11 +8,12 @@ import { useAuth } from '@/app/context/auth';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { BookType } from '@/app/types/BookType';
 import { collection, doc, getDocs, onSnapshot, updateDoc, writeBatch } from 'firebase/firestore';
-import CircularColor from '@/app/CircularColor';
 import { updateProfile } from 'firebase/auth';
+import LoadingIndicator from './LoadingIndicator';
 
 export default function Mypage() {
   const { user } = useAuth();
+  // console.log(user)
 
   const [books, setBooks] = useState<BookType[]>([]);
   const [newName, setNewName] = useState('');
@@ -20,12 +21,6 @@ export default function Mypage() {
 
   const userGetName = auth.currentUser?.displayName;
   const userDocId = auth.currentUser?.uid;
-
-  useEffect(() => {
-    // ログインユーザーの投稿だけを取得
-    const userBookData = books.filter((book) => book.userId === userDocId);
-    setUserBooks(userBookData);
-  }, [books, user]);
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setNewName(e.target.value);
@@ -134,7 +129,7 @@ export default function Mypage() {
 
   useEffect(() => {
     // ユーザーが投稿した本を取得
-    const userBookData = books.filter((book) => book.docId);
+    const userBookData = books.filter((book) => book.userId === userDocId);
 
     // 各本に対していいねの数を取得
     Promise.all(
@@ -164,22 +159,7 @@ export default function Mypage() {
   }, [user]);
 
   if (user === undefined) {
-    return (
-      <>
-        <Container
-          sx={{
-            mt: 3,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            minHeight: '100vh',
-          }}
-        >
-          <Box>ローディング中...</Box>
-          <CircularColor />
-        </Container>
-      </>
-    );
+    return <LoadingIndicator />;
   }
 
   return (
@@ -228,7 +208,6 @@ export default function Mypage() {
             <Avatar alt="" src={user?.photoURL} sx={{ width: 300, height: 300 }} />
           </Grid>
         </Grid>
-
         <Box>
           <Typography variant="h5" sx={{ my: 5 }}>
             📖投稿済📖

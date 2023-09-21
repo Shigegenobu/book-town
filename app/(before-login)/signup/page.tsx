@@ -202,16 +202,16 @@ export default function SignUp() {
             </Grid>
 
             <Grid item>
-              <Link href="/">
-                <Button size="large" variant="contained">
-                  HOME
-                </Button>
+              <Link href="/signin">
+                <Button variant="contained">ログイン</Button>
               </Link>
             </Grid>
 
             <Grid item>
-              <Link href="/signin">
-                <Button variant="contained">ログイン</Button>
+              <Link href="/">
+                <Button size="large" variant="contained">
+                  HOME
+                </Button>
               </Link>
             </Grid>
           </Grid>

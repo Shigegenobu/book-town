@@ -257,13 +257,13 @@ export default function BookEdit({ searchParams }: { searchParams: { id: string 
           </Box>
 
           <Grid container justifyContent="space-between" spacing={2} mt={2}>
-            <Grid item xs={2}>
+            <Grid item>
               <Link href="./list">
                 <Button variant="contained">一覧に戻る</Button>
               </Link>
             </Grid>
 
-            <Grid item xs={1}>
+            <Grid item >
               <Button variant="contained" onClick={handleSaveClick}>
                 編集保存
               </Button>
