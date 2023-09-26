@@ -66,7 +66,7 @@ function ResponsiveAppBar() {
               textDecoration: 'none',
             }}
           >
-            📖BOOKTOWN📖
+            📖BOOK-TOWN📖
           </Typography>
 
           <Box

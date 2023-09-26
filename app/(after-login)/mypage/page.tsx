@@ -122,7 +122,7 @@ export default function Mypage() {
         };
       });
       setBooks(updatedBooks);
-      console.log(updatedBooks);
+      // console.log(updatedBooks);
     });
     return () => unsubscribe();
   }, []);
