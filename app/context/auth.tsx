@@ -25,8 +25,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           // ユーザーデータを取得して格納
           const appUser = (await getDoc(ref)).data() as UserType;
           setUser(appUser);
-          console.log('存在しているよ');
-          console.log(appUser);
+          // console.log('存在しているよ');
+          // console.log(appUser);
         }
       } else {
         // ログインしていない場合、ユーザー情報を空にする

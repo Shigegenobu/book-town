@@ -136,7 +136,7 @@ export default function List() {
   }, [books]);
 
   useEffect(() => {
-    console.log(books);
+    // console.log(books);
   }, [books]);
 
   const [dataLoaded, setDataLoaded] = useState(false);

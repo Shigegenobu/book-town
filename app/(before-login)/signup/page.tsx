@@ -52,7 +52,7 @@ export default function SignUp() {
       };
       await setDoc(userRef, appUser);
       console.log('ユーザーが作成されました');
-      console.log(appUser);
+      // console.log(appUser);
       router.push('/signin');
 
       // フォームのステートをリセット

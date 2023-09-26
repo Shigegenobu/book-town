@@ -15,8 +15,8 @@ export default function SignIn() {
     const { email, password } = event.target.elements;
     signInWithEmailAndPassword(auth, email.value, password.value)
       .then((user) => {
-        console.log('ログイン成功=', user.user.uid);
-        console.log(user);
+        // console.log('ログイン成功=', user.user.uid);
+        // console.log(user);
 
         router.push('./mypage');
       })
