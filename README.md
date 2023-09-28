@@ -101,8 +101,8 @@ erDiagram
     timestamp created_at
   }
 
-  users ||--o{ likes : ""
   books ||--o{ likes : ""
+  users ||--o{ likes : ""
 
   likes {
     bigint id PK
