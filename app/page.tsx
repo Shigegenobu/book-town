@@ -13,14 +13,14 @@ export default function Home() {
               <Image src="/bookImage.png" alt="book picture" objectFit="contain" layout="fill" />
             </Box>
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={4} sx={{ display: { xs: 'none', md: 'block' } }}>
             <Box style={{ width: '100%', paddingBottom: '100%', position: 'relative' }}>
-              <Image src="/bookImage2.png" alt="book picture" objectFit="contain" layout="fill" />
+              <Image src="/bookImage2.png" alt="book picture2" objectFit="contain" layout="fill" />
             </Box>
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={4} sx={{ display: { xs: 'none', md: 'block' } }}>
             <Box style={{ width: '100%', paddingBottom: '100%', position: 'relative' }}>
-              <Image src="/bookImage3.png" alt="book picture" objectFit="contain" layout="fill" />
+              <Image src="/bookImage3.png" alt="book picture3" objectFit="contain" layout="fill" />
             </Box>
           </Grid>
         </Grid>
