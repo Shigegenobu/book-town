@@ -27,7 +27,7 @@ export default function SignIn() {
 
   return (
     <>
-      <Container sx={{ width: '75%' }}>
+      <Container>
         <h2>ログインページ</h2>
 
         <form onSubmit={handleSubmit}>
@@ -55,21 +55,21 @@ export default function SignIn() {
 
           <Grid container justifyContent="space-between" spacing={2} mt={2}>
             <Grid item>
-              <Button variant="contained" type="submit">
+              <Button variant="contained" type="submit" size="large">
                 ログイン
               </Button>
             </Grid>
 
             <Grid item>
               <Link href="./signup">
-                <Button variant="contained"> 新規登録</Button>
+                <Button variant="contained" size="large"> 新規登録</Button>
               </Link>
             </Grid>
 
             <Grid item>
               <Link href="/">
-                <Button size="large" variant="contained">
-                  HOME
+                <Button variant="contained" size="large">
+                  H O M E
                 </Button>
               </Link>
             </Grid>

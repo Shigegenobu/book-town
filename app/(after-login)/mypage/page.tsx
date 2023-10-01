@@ -3,13 +3,14 @@ import { Avatar, Box, Button, Container, Grid, Stack, TextField, Typography } fr
 import MenuBookTwoToneIcon from '@mui/icons-material/MenuBookTwoTone';
 
 import Link from 'next/link';
-import { auth, db } from '../../service/firebase';
+import { auth, db, storage } from '../../service/firebase';
 import { useAuth } from '@/app/context/auth';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { BookType } from '@/app/types/BookType';
 import { collection, doc, getDocs, onSnapshot, updateDoc, writeBatch } from 'firebase/firestore';
 import { updateProfile } from 'firebase/auth';
 import LoadingIndicator from './LoadingIndicator';
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 
 export default function Mypage() {
   const { user } = useAuth();
@@ -17,10 +18,14 @@ export default function Mypage() {
 
   const [books, setBooks] = useState<BookType[]>([]);
   const [newName, setNewName] = useState('');
+  const [newPhotoURL, setNewPhotoURL] = useState('');
   const [userBooks, setUserBooks] = useState<BookType[]>([]);
 
   const userGetName = auth.currentUser?.displayName;
+  // console.log(userGetName)
   const userDocId = auth.currentUser?.uid;
+  const userGetPhotoURL = auth.currentUser?.photoURL;
+  // console.log(auth.currentUser?.photoURL);
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setNewName(e.target.value);
@@ -55,7 +60,6 @@ export default function Mypage() {
           // ユーザーがログインしていない場合のエラーハンドリング
           console.error('ユーザーがログインしていません');
         }
-
         // booksコレクション内のuserNameフィールドも更新
         const booksQuerySnapshot = await getDocs(collection(db, 'books'));
         const batch = writeBatch(db);
@@ -68,11 +72,99 @@ export default function Mypage() {
             batch.update(bookRef, { userName: newName });
           }
         });
-
         // バッチで更新をコミット
         await batch.commit();
 
         console.log('データの書き込み後:', userDocId, newName);
+        console.log('更新されました');
+      }
+    } catch (error) {
+      console.error('データの書き込みエラー:', error);
+    }
+  };
+
+  const OnFileUploadToFirebase = (e: { target: { files: any } }) => {
+    const file = e.target.files[0];
+    const storageRef = ref(storage, file.name);
+
+    const uploadImage = uploadBytesResumable(storageRef, file);
+
+    uploadImage.on(
+      'state_changed',
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log('Upload is ' + progress + '% done');
+        switch (snapshot.state) {
+          case 'paused':
+            console.log('Upload is paused');
+            break;
+          case 'running':
+            console.log('Upload is running');
+            break;
+        }
+      },
+      (error) => {
+        console.log(error);
+      },
+      () => {
+        getDownloadURL(uploadImage.snapshot.ref).then((downloadURL) => {
+          console.log('アップロード成功！');
+          console.log('File available at', downloadURL);
+
+          setNewPhotoURL(downloadURL);
+        });
+      }
+    );
+  };
+
+  const handleAvatarClick = async () => {
+    try {
+      if (!newPhotoURL) {
+        alert('画像が未出力です');
+        return;
+      }
+      if (userDocId) {
+        console.log('データの書き込み前:', userDocId, userGetPhotoURL);
+
+        // usersコレクションのユーザー名を更新
+        const userRef = doc(db, 'users', userDocId);
+        await updateDoc(userRef, { photoURL: newPhotoURL });
+
+        // Firebase 認証ユーザーの表示名を更新
+        const currentUser = auth.currentUser;
+        if (currentUser) {
+          updateProfile(currentUser, {
+            photoURL: newPhotoURL,
+          })
+            .then(() => {
+              console.log('認証ユーザーの表示名更新成功');
+            })
+            .catch((error: any) => {
+              console.log(error);
+            });
+        } else {
+          // ユーザーがログインしていない場合のエラーハンドリング
+          console.error('ユーザーがログインしていません');
+        }
+        // booksコレクション内のuserPhotoURLフィールドも更新
+        const booksQuerySnapshot = await getDocs(collection(db, 'books'));
+        const batch = writeBatch(db);
+
+        booksQuerySnapshot.docs.map((doc) => {
+          const bookData = doc.data();
+          if (bookData.userId === userDocId) {
+            // ログインユーザーの本のphotoURLを更新
+            const bookRef = doc.ref;
+            batch.update(bookRef, { userPhotoURL: newPhotoURL });
+          }
+        });
+        // バッチで更新をコミット
+        await batch.commit();
+
+        //リロード
+        await window.location.reload();
+
+        console.log('データの書き込み後:', userDocId, newPhotoURL);
         console.log('更新されました');
       }
     } catch (error) {
@@ -156,6 +248,7 @@ export default function Mypage() {
 
   useEffect(() => {
     setNewName(user?.name || '');
+    setNewPhotoURL(user?.photoURL || '');
   }, [user]);
 
   if (user === undefined) {
@@ -185,29 +278,56 @@ export default function Mypage() {
               <Typography sx={{ fontWeight: 'bold', color: 'orange' }}>email</Typography>
               <Typography>{user?.email}</Typography>
             </Box>
-            <Box sx={{ my: 3 }}></Box>
 
-            <Stack spacing={3}>
-              <Grid>
-                <Link href="./list">
-                  <Button variant="contained" sx={{ marginRight: 5 }}>
-                    一覧へ
-                  </Button>
-                </Link>
-
-                <Link href="./create">
-                  <Button variant="contained" color="warning">
-                    投稿する
-                  </Button>
-                </Link>
-              </Grid>
-            </Stack>
+            <Box>
+              <Box sx={{ mb: 3 }}>
+                アバター画像を変更する
+                <Button variant="contained" onClick={handleAvatarClick} sx={{ ml: 3 }}>
+                  更新
+                </Button>
+              </Box>
+              <Button variant="contained">
+                <input type="file" accept=".png, .jpeg, .jpg" onChange={OnFileUploadToFirebase} />
+              </Button>
+            </Box>
           </Grid>
 
-          <Grid item>
-            <Avatar alt="" src={user?.photoURL} sx={{ width: 300, height: 300 }} />
+          <Grid item sx={{ display: { xs: 'none', sm: 'block' } }}>
+            <Avatar alt="" src={newPhotoURL} sx={{ width: 300, height: 300 }} />
+            {/* <Avatar alt="" src={user?.photoURL} sx={{ width: 300, height: 300 }} /> */}
           </Grid>
         </Grid>
+        <Stack spacing={3} sx={{ my: 3 }}>
+          <Grid>
+            <Link href="./list">
+              <Button variant="contained" sx={{ marginRight: 5 }}>
+                一覧へ
+              </Button>
+            </Link>
+
+            <Link href="./create">
+              <Button variant="contained" color="warning">
+                投稿する
+              </Button>
+            </Link>
+          </Grid>
+        </Stack>
+        {/* <h2>画像アップローダー</h2>
+        <Box sx={{ position: 'relative', paddingTop: '100%', overflow: 'hidden' }}>
+          <img
+            src={newPhotoURL}
+            alt="本の写真"
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+            }}
+          />
+        </Box> */}
+
         <Box>
           <Typography variant="h5" sx={{ my: 5 }}>
             📖投稿済📖
