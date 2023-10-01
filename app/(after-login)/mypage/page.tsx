@@ -280,12 +280,12 @@ export default function Mypage() {
             </Box>
 
             <Box>
-              <Box sx={{ mb: 3 }}>
+              <Typography sx={{ mb: 3, fontWeight: 'bold', color: 'orange' }}>
                 アバター画像を変更する
-                <Button variant="contained" onClick={handleAvatarClick} sx={{ ml: 3 }}>
+                <Button variant="contained" size="large" onClick={handleAvatarClick} sx={{ ml: 3 }}>
                   更新
                 </Button>
-              </Box>
+              </Typography>
               <Button variant="contained">
                 <input type="file" accept=".png, .jpeg, .jpg" onChange={OnFileUploadToFirebase} />
               </Button>
@@ -294,7 +294,6 @@ export default function Mypage() {
 
           <Grid item sx={{ display: { xs: 'none', sm: 'block' } }}>
             <Avatar alt="" src={newPhotoURL} sx={{ width: 300, height: 300 }} />
-            {/* <Avatar alt="" src={user?.photoURL} sx={{ width: 300, height: 300 }} /> */}
           </Grid>
         </Grid>
         <Stack spacing={3} sx={{ my: 3 }}>
@@ -312,22 +311,6 @@ export default function Mypage() {
             </Link>
           </Grid>
         </Stack>
-        {/* <h2>画像アップローダー</h2>
-        <Box sx={{ position: 'relative', paddingTop: '100%', overflow: 'hidden' }}>
-          <img
-            src={newPhotoURL}
-            alt="本の写真"
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'contain',
-            }}
-          />
-        </Box> */}
-
         <Box>
           <Typography variant="h5" sx={{ my: 5 }}>
             📖投稿済📖
