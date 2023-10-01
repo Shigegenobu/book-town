@@ -67,7 +67,7 @@ export default function Mypage() {
         booksQuerySnapshot.docs.map((doc) => {
           const bookData = doc.data();
           if (bookData.userId === userDocId) {
-            // ログインユーザーの本のuserNameを更新
+            // ログインユーザーのbooksのuserNameを更新
             const bookRef = doc.ref;
             batch.update(bookRef, { userName: newName });
           }
@@ -153,7 +153,7 @@ export default function Mypage() {
         booksQuerySnapshot.docs.map((doc) => {
           const bookData = doc.data();
           if (bookData.userId === userDocId) {
-            // ログインユーザーの本のphotoURLを更新
+            // ログインユーザーのbooksのphotoURLを更新
             const bookRef = doc.ref;
             batch.update(bookRef, { userPhotoURL: newPhotoURL });
           }
@@ -312,21 +312,6 @@ export default function Mypage() {
             </Link>
           </Grid>
         </Stack>
-        {/* <h2>画像アップローダー</h2>
-        <Box sx={{ position: 'relative', paddingTop: '100%', overflow: 'hidden' }}>
-          <img
-            src={newPhotoURL}
-            alt="本の写真"
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'contain',
-            }}
-          />
-        </Box> */}
 
         <Box>
           <Typography variant="h5" sx={{ my: 5 }}>

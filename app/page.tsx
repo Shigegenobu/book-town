@@ -50,7 +50,7 @@ export default function Home() {
               </Button>
             </Link>
             <Link href="./signup/">
-              <Button size="large" variant="contained">
+              <Button size="large" variant="contained" sx={{mb:3}}>
                 新規登録はこちら
               </Button>
             </Link>
