@@ -27,12 +27,10 @@ export default function SignIn() {
 
   return (
     <>
-      <Container>
-        <h2>ログインページ</h2>
-
+      <Container maxWidth="md" sx={{ pt: 5 }}>
+        <h2>ログイン</h2>
         <form onSubmit={handleSubmit}>
           <Box>
-            <p>メールアドレス</p>
             <TextField
               label="メールアドレスを入力してください"
               variant="outlined"
@@ -41,7 +39,6 @@ export default function SignIn() {
               name="email"
               type="email"
             />
-            <p>パスワード</p>
             <TextField
               id="outlined-basic"
               label="パスワードを入力してください"
@@ -50,26 +47,22 @@ export default function SignIn() {
               autoComplete="off"
               name="password"
               type="password"
+              sx={{ mt: 3 }}
             />
+            <Button variant="contained" type="submit" fullWidth sx={{ mt: 3 }}>
+              ログイン
+            </Button>
           </Box>
 
-          <Grid container justifyContent="space-between" spacing={2} mt={2}>
+          <Grid container justifyContent="space-between" spacing={2} mt={3}>
             <Grid item>
-              <Button variant="contained" type="submit" size="large">
-                ログイン
-              </Button>
-            </Grid>
-
-            <Grid item>
-              <Link href="./signup">
-                <Button variant="contained" size="large"> 新規登録</Button>
-              </Link>
+              <Link href="./signup">アカウントをお持ちでない方はこちら</Link>
             </Grid>
 
             <Grid item>
               <Link href="/">
-                <Button variant="contained" size="large">
-                  H O M E
+                <Button variant="contained" sx={{ backgroundColor: '#FFD97E' }}>
+                  戻る
                 </Button>
               </Link>
             </Grid>

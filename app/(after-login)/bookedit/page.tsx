@@ -180,7 +180,23 @@ export default function BookEdit({ searchParams }: { searchParams: { id: string 
     <>
       <Box>
         <Container>
-          <Grid container spacing={2} mt={10} alignContent="center">
+          <Grid container justifyContent="space-between" spacing={2} mt={2}>
+            <Grid item>
+              <Link href="./list">
+                <Button variant="contained" color="error">
+                  キャンセル
+                </Button>
+              </Link>
+            </Grid>
+
+            <Grid item>
+              <Button variant="contained" color="info" onClick={handleSaveClick}>
+                編集保存
+              </Button>
+            </Grid>
+          </Grid>
+
+          <Grid container spacing={2} mt={5} alignContent="center">
             <Grid item xs={12} sm={4}>
               <h2>画像アップローダー</h2>
               <Box sx={{ position: 'relative', paddingTop: '100%', overflow: 'hidden' }}>
@@ -255,20 +271,6 @@ export default function BookEdit({ searchParams }: { searchParams: { id: string 
               />
             </Stack>
           </Box>
-
-          <Grid container justifyContent="space-between" spacing={2} mt={2}>
-            <Grid item>
-              <Link href="./list">
-                <Button variant="contained">一覧に戻る</Button>
-              </Link>
-            </Grid>
-
-            <Grid item >
-              <Button variant="contained" onClick={handleSaveClick}>
-                編集保存
-              </Button>
-            </Grid>
-          </Grid>
         </Container>
       </Box>
     </>

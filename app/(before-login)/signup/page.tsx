@@ -142,7 +142,6 @@ export default function SignUp() {
         <form onSubmit={handleSubmit}>
           {error && <p style={{ color: 'red' }}>{error}</p>}
           <Stack spacing={2}>
-            <p>イメージ画像（JpegかPngの画像ファイル）</p>
             <Stack direction="row" justifyContent="flex-start" spacing={2}>
               <Avatar alt="" src={userURL} />
               <Button variant="contained">
@@ -150,10 +149,9 @@ export default function SignUp() {
               </Button>
             </Stack>
             <Box>画像を設定しない場合は、デフォルト画像がアイコンになります。</Box>
-            <p>名前</p>
             <TextField
               id="name"
-              label="名前を入力してください"
+              label="ユーザー名を入力してください"
               variant="outlined"
               fullWidth
               autoComplete="off"
@@ -164,7 +162,6 @@ export default function SignUp() {
                 handleChangeName(e);
               }}
             />
-            <p>メールアドレス</p>
             <TextField
               id="email"
               label="メールアドレスを入力してください"
@@ -178,7 +175,6 @@ export default function SignUp() {
                 handleChangeEmail(e);
               }}
             />
-            <p>パスワード</p>
             <TextField
               id="password"
               label="パスワードを入力してください"
@@ -194,23 +190,19 @@ export default function SignUp() {
             />
           </Stack>
 
+          <Button variant="contained" size="large" type="submit" fullWidth sx={{ mt: 3 }}>
+            登録
+          </Button>
+
           <Grid container justifyContent="space-between" spacing={2} mt={2}>
             <Grid item>
-              <Button variant="contained" size="large" type="submit">
-                新規登録
-              </Button>
-            </Grid>
-
-            <Grid item>
-              <Link href="/signin">
-                <Button variant="contained" size="large">ログイン</Button>
-              </Link>
+              <Link href="/signin">アカウントをお持ちの方</Link>
             </Grid>
 
             <Grid item>
               <Link href="/">
-                <Button  variant="contained" size="large">
-                  H O M E
+                <Button variant="contained" size="large" sx={{ backgroundColor: '#FFD97E' }}>
+                  戻る
                 </Button>
               </Link>
             </Grid>
