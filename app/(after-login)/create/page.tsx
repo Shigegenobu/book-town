@@ -164,7 +164,22 @@ export default function Create() {
     <>
       <Box>
         <Container>
-          <Grid container spacing={2} mt={10} alignItems="Center">
+          <Grid container justifyContent="space-between" spacing={2} mt={2}>
+            <Grid item>
+              <Link href="./list">
+                <Button variant="contained" color="error" size="large">
+                  キャンセル
+                </Button>
+              </Link>
+            </Grid>
+            <Grid item>
+              <Button variant="contained" size="large" color="info" onClick={handleClick}>
+                投稿
+              </Button>
+            </Grid>
+          </Grid>
+
+          <Grid container spacing={2} mt={3} alignItems="Center">
             <Grid item sm={4}>
               <h2>画像アップローダー</h2>
               <Box sx={{ position: 'relative', paddingTop: '100%', overflow: 'hidden' }}>
@@ -236,24 +251,9 @@ export default function Create() {
               />
             </Stack>
           </Box>
-
-          <Grid container justifyContent="space-between" spacing={2} mt={2}>
-            <Grid item>
-              <Button variant="contained" size="large" color="warning" onClick={handleClick}>
-                投稿
-              </Button>
-            </Grid>
-            <Grid item>
-              <Button variant="contained" onClick={handleResetClick}>
-                リセット
-              </Button>
-            </Grid>
-            <Grid item>
-              <Link href="./list">
-                <Button variant="contained">一覧へ</Button>
-              </Link>
-            </Grid>
-          </Grid>
+          <Button variant="contained" onClick={handleResetClick} sx={{ mt: 2 }} fullWidth>
+            リセット
+          </Button>
         </Container>
       </Box>
     </>

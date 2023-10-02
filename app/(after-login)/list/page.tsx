@@ -211,22 +211,27 @@ export default function List() {
 
         <Grid container justifyContent="space-between" spacing={2} mt={2}>
           <Grid item>
-            <Box sx={{ my: 2, display: 'flex', justifyContent: 'space-evenly', width: 300 }}>
+            <Box sx={{ my: 2, display: 'flex', justifyContent: 'space-evenly' }}>
               <Box>
-                <Button variant="contained" onClick={() => handleSortDateClick()}>
-                  {sortDateDirection === 'asc' ? '最新順に' : '古い順に'}
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={() => handleSortDateClick()}
+                  sx={{ mr: 2 }}
+                >
+                  {sortDateDirection === 'asc' ? '最新順' : '古い順'}
                 </Button>
               </Box>
               <Box>
-                <Button variant="contained" onClick={handleSortLikedClick}>
-                  📕 {sortLikedDirection === 'asc' ? 'いい本多い順に' : 'いい本少ない順に'}
+                <Button variant="contained" size="large" onClick={handleSortLikedClick}>
+                  📕 {sortLikedDirection === 'asc' ? 'いい本多い順' : 'いい本少ない順'}
                 </Button>
               </Box>
             </Box>
           </Grid>
           <Grid item>
             <Link href="./create/">
-              <Button variant="contained" size="large" color="warning">
+              <Button variant="contained" size="large" color="info" sx={{ my: 2 }}>
                 投稿する
               </Button>
             </Link>
