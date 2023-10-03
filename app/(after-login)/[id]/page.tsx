@@ -418,7 +418,7 @@ export default function BookShow() {
             <Grid item>
               <Link href="./list">
                 <Button variant="contained" size="large">
-                  一覧へ
+                  戻る
                 </Button>
               </Link>
             </Grid>
@@ -427,7 +427,9 @@ export default function BookShow() {
               {canEdit && (
                 <>
                   <Link href={`/bookedit?id=${bookId}`}>
-                    <Button variant="contained">編集ページへ</Button>
+                    <Button variant="contained" size="large">
+                      編集
+                    </Button>
                   </Link>
                   <Button
                     variant="contained"
@@ -494,14 +496,20 @@ export default function BookShow() {
 
           {user && (
             <Box sx={{ mt: 3 }}>
-              <Typography>コメントを投稿する</Typography>
+              <Typography>コメント投稿</Typography>
               <TextField
                 autoComplete="off"
                 value={comment.text}
                 onChange={(e) => handleCommentChange(e)}
               />
 
-              <Button variant="contained" size="large" onClick={handleClick} sx={{ ml: 4 }}>
+              <Button
+                variant="contained"
+                color="info"
+                size="large"
+                onClick={handleClick}
+                sx={{ ml: 3, mt: 1 }}
+              >
                 投稿
               </Button>
             </Box>

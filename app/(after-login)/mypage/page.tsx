@@ -305,7 +305,7 @@ export default function Mypage() {
             </Link>
 
             <Link href="./create">
-              <Button variant="contained" color="warning">
+              <Button variant="contained" color="info">
                 投稿する
               </Button>
             </Link>
