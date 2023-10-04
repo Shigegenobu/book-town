@@ -258,65 +258,96 @@ export default function Mypage() {
   return (
     <>
       <Container sx={{ mt: 3 }}>
-        <Grid container justifyContent="space-between" spacing={2} mt={2}>
-          <Grid item>
-            <Box>
-              <Typography sx={{ fontWeight: 'bold', color: 'orange' }}>名前</Typography>
-              <Box display="flex">
-                <TextField
-                  autoComplete="off"
-                  value={newName}
-                  onChange={(e) => handleNameChange(e)}
-                />
-                <Button variant="contained" onClick={handleEditClick} sx={{ ml: 3 }}>
-                  更新
-                </Button>
-              </Box>
-            </Box>
-
-            <Box sx={{ my: 3 }}>
-              <Typography sx={{ fontWeight: 'bold', color: 'orange' }}>email</Typography>
-              <Typography>{user?.email}</Typography>
-            </Box>
-
-            <Box>
-              <Typography sx={{ mb: 3, fontWeight: 'bold', color: 'orange' }}>
-                アバター画像を変更する
-                <Button variant="contained" size="large" onClick={handleAvatarClick} sx={{ ml: 3 }}>
-                  更新
-                </Button>
-              </Typography>
-              <Button variant="contained">
-                <input type="file" accept=".png, .jpeg, .jpg" onChange={OnFileUploadToFirebase} />
-              </Button>
-            </Box>
-          </Grid>
-
-          <Grid item sx={{ display: { xs: 'none', sm: 'block' } }}>
-            <Avatar alt="" src={newPhotoURL} sx={{ width: 300, height: 300 }} />
-          </Grid>
-        </Grid>
         <Stack spacing={3} sx={{ my: 3 }}>
-          <Grid>
+          <Grid container justifyContent="right">
+            {/* <Box
+              style={{
+                position: 'fixed',
+                // bottom: '20px', // 画面下部からの距離を調整
+                // right: '20px', // 画面右端からの距離を調整
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-end',
+              }}
+            > */}
             <Link href="./list">
-              <Button variant="contained" sx={{ marginRight: 5 }}>
-                一覧へ
+              <Button
+                variant="contained"
+                size="large"
+                sx={{ mb: 5, mr: 3, borderRadius: '50%', fontSize: '24px' }}
+              >
+                一覧
               </Button>
             </Link>
 
             <Link href="./create">
-              <Button variant="contained" color="info">
-                投稿する
+              <Button
+                variant="contained"
+                size="large"
+                color="info"
+                sx={{ borderRadius: '50%', fontSize: '24px' }}
+              >
+                投稿
               </Button>
             </Link>
+            {/* </Box> */}
           </Grid>
         </Stack>
+
+        <Box sx={{ p: 2, border: 1, width: 'auto', height: 'auto', borderRadius: 1 }}>
+          <Grid container justifyContent="left" spacing={2} mt={1}>
+            <Grid item xs={12} sm={6}>
+              <Box>
+                <Typography sx={{ fontWeight: 'bold' }}>名前</Typography>
+                <Box display="flex">
+                  <TextField
+                    autoComplete="off"
+                    value={newName}
+                    onChange={(e) => handleNameChange(e)}
+                  />
+                  <Button
+                    variant="contained"
+                    onClick={handleEditClick}
+                    sx={{ ml: 3, backgroundColor: '#FFD97E' }}
+                  >
+                    更新
+                  </Button>
+                </Box>
+              </Box>
+
+              <Box sx={{ my: 3 }}>
+                <Typography sx={{ fontWeight: 'bold' }}>email</Typography>
+                <Typography>{user?.email}</Typography>
+              </Box>
+
+              <Box sx={{ mt: 3 }}>
+                <Typography sx={{ fontWeight: 'bold' }}>アバター画像の変更</Typography>
+                <Button variant="contained" sx={{ maxWidth: '100%', mb: 3 }}>
+                  <input type="file" accept=".png, .jpeg, .jpg" onChange={OnFileUploadToFirebase} />
+                </Button>
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={handleAvatarClick}
+                  sx={{ ml: 3, mb: 3, backgroundColor: '#FFD97E' }}
+                >
+                  更新
+                </Button>
+              </Box>
+            </Grid>
+
+            <Grid item sx={{ display: { xs: 'none', sm: 'block' } }}>
+              <Avatar alt="" src={newPhotoURL} sx={{ width: 200, height: 200 }} />
+            </Grid>
+          </Grid>
+        </Box>
+
         <Box>
           <Typography variant="h5" sx={{ my: 5 }}>
-            📖投稿済📖
+            📖投稿済一蘭📖
           </Typography>
 
-          <Grid container spacing={2} justifyContent="flex-start" sx={{ mt: 8 }}>
+          <Grid container spacing={2} justifyContent="flex-start">
             {userBooks.length === 0 ? (
               <Grid item xs={12} sx={{ textAlign: 'center' }}>
                 <Box
