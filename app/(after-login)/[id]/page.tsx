@@ -21,6 +21,8 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/auth';
 import CircularColor from '@/app/CircularColor';
+import HomeIcon from '@mui/icons-material/Home';
+import CreateIcon from '@mui/icons-material/Create';
 import { CommentType } from '@/app/types/CommentType';
 import { LikedUser } from '@/app/types/LikedUser';
 
@@ -418,7 +420,7 @@ export default function BookShow() {
             <Grid item>
               <Link href="./list">
                 <Button variant="contained" size="large">
-                  戻る
+                  <HomeIcon />
                 </Button>
               </Link>
             </Grid>
@@ -426,20 +428,19 @@ export default function BookShow() {
             <Grid item sx={{ display: 'flex', alignItems: 'center' }}>
               {canEdit && (
                 <>
-                  <Link href={`/bookedit?id=${bookId}`}>
-                    <Button variant="contained" size="large">
-                      編集
-                    </Button>
-                  </Link>
                   <Button
                     variant="contained"
                     size="large"
                     color="error"
-                    sx={{ ml: 3 }}
                     onClick={() => handleDeleteClick()}
                   >
                     削除
                   </Button>
+                  <Link href={`/bookedit?id=${bookId}`}>
+                    <Button variant="contained" size="large" sx={{ ml: 3 }}>
+                      編集
+                    </Button>
+                  </Link>
                 </>
               )}
             </Grid>
@@ -501,6 +502,7 @@ export default function BookShow() {
                 autoComplete="off"
                 value={comment.text}
                 onChange={(e) => handleCommentChange(e)}
+                sx={{ maxWidth: '50%' }}
               />
 
               <Button
@@ -510,7 +512,7 @@ export default function BookShow() {
                 onClick={handleClick}
                 sx={{ ml: 3, mt: 1 }}
               >
-                投稿
+                <CreateIcon />
               </Button>
             </Box>
           )}

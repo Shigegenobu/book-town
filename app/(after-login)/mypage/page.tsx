@@ -11,6 +11,8 @@ import { collection, doc, getDocs, onSnapshot, updateDoc, writeBatch } from 'fir
 import { updateProfile } from 'firebase/auth';
 import LoadingIndicator from './LoadingIndicator';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
+import HomeIcon from '@mui/icons-material/Home';
+import CreateIcon from '@mui/icons-material/Create';
 
 export default function Mypage() {
   const { user } = useAuth();
@@ -260,37 +262,32 @@ export default function Mypage() {
       <Container sx={{ mt: 3 }}>
         <Stack spacing={3} sx={{ my: 3 }}>
           <Grid container justifyContent="right">
-            {/* <Box
-              style={{
+            <Box
+              sx={{
                 position: 'fixed',
-                // bottom: '20px', // 画面下部からの距離を調整
-                // right: '20px', // 画面右端からの距離を調整
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-end',
-              }}
-            > */}
-            <Link href="./list">
-              <Button
-                variant="contained"
-                size="large"
-                sx={{ mb: 5, mr: 3, borderRadius: '50%', fontSize: '24px' }}
-              >
-                一覧
-              </Button>
-            </Link>
+                bottom: '25px',
+                right: '40px',
+                zIndex: 9999,
+                opacity: 0.8,
 
-            <Link href="./create">
-              <Button
-                variant="contained"
-                size="large"
-                color="info"
-                sx={{ borderRadius: '50%', fontSize: '24px' }}
-              >
-                投稿
-              </Button>
-            </Link>
-            {/* </Box> */}
+                '@media (min-width: 768px)': {
+                  position: 'static',
+                  opacity: 1.0,
+                },
+              }}
+            >
+              <Link href="./list">
+                <Button variant="contained" size="large" sx={{ mr: 3 }}>
+                  <HomeIcon />
+                </Button>
+              </Link>
+
+              <Link href="./create">
+                <Button variant="contained" size="large" color="info">
+                  <CreateIcon />
+                </Button>
+              </Link>
+            </Box>
           </Grid>
         </Stack>
 
@@ -299,19 +296,23 @@ export default function Mypage() {
             <Grid item xs={12} sm={6}>
               <Box>
                 <Typography sx={{ fontWeight: 'bold' }}>名前</Typography>
-                <Box display="flex">
-                  <TextField
-                    autoComplete="off"
-                    value={newName}
-                    onChange={(e) => handleNameChange(e)}
-                  />
-                  <Button
-                    variant="contained"
-                    onClick={handleEditClick}
-                    sx={{ ml: 3, backgroundColor: '#FFD97E' }}
-                  >
-                    更新
-                  </Button>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Box>
+                    <TextField
+                      autoComplete="off"
+                      value={newName}
+                      onChange={(e) => handleNameChange(e)}
+                      sx={{ maxWidth: '60%' }}
+                    />
+                    <Button
+                      variant="contained"
+                      size="large"
+                      onClick={handleEditClick}
+                      sx={{ ml: 2, backgroundColor: '#FFD97E' }}
+                    >
+                      更新
+                    </Button>
+                  </Box>
                 </Box>
               </Box>
 
@@ -322,17 +323,25 @@ export default function Mypage() {
 
               <Box sx={{ mt: 3 }}>
                 <Typography sx={{ fontWeight: 'bold' }}>アバター画像の変更</Typography>
-                <Button variant="contained" sx={{ maxWidth: '100%', mb: 3 }}>
-                  <input type="file" accept=".png, .jpeg, .jpg" onChange={OnFileUploadToFirebase} />
-                </Button>
-                <Button
-                  variant="contained"
-                  size="large"
-                  onClick={handleAvatarClick}
-                  sx={{ ml: 3, mb: 3, backgroundColor: '#FFD97E' }}
-                >
-                  更新
-                </Button>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
+                  <Box>
+                    <Button variant="contained" sx={{ maxWidth: '50%', mb: 3, mr: 2 }}>
+                      <input
+                        type="file"
+                        accept=".png, .jpeg, .jpg"
+                        onChange={OnFileUploadToFirebase}
+                      />
+                    </Button>
+                    <Button
+                      variant="contained"
+                      size="large"
+                      onClick={handleAvatarClick}
+                      sx={{ mb: 3, backgroundColor: '#FFD97E' }}
+                    >
+                      更新
+                    </Button>
+                  </Box>
+                </Box>
               </Box>
             </Grid>
 
@@ -344,7 +353,7 @@ export default function Mypage() {
 
         <Box>
           <Typography variant="h5" sx={{ my: 5 }}>
-            📖投稿済一蘭📖
+            📖投稿済一覧📖
           </Typography>
 
           <Grid container spacing={2} justifyContent="flex-start">
@@ -409,8 +418,24 @@ export default function Mypage() {
                             />
                           )}
                         </Box>
-                        <Typography>タイトル：「{book.title}」</Typography>
-                        <Typography>著者 ：「{book.author}」</Typography>
+                        <Typography
+                          sx={{
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          タイトル：「{book.title}」
+                        </Typography>
+                        <Typography
+                          sx={{
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          著者 ：「{book.author}」
+                        </Typography>
                         <Box
                           sx={{
                             display: 'flex',

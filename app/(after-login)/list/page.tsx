@@ -8,6 +8,7 @@ import { db } from '@/app/service/firebase';
 import { collection, getDocs, onSnapshot } from 'firebase/firestore';
 import CircularColor from '@/app/CircularColor';
 import SearchIcon from '@mui/icons-material/Search';
+import CreateIcon from '@mui/icons-material/Create';
 
 export default function List() {
   const [books, setBooks] = useState<BookType[]>([]);
@@ -172,7 +173,7 @@ export default function List() {
             <Box sx={{ display: 'flex', alignContent: 'center' }}>
               <Typography mr={3} sx={{ display: 'inline-block', ml: 1 }}>
                 <SearchIcon />
-                タイトルで検索
+                タイトル
               </Typography>
               <TextField
                 autoComplete="off"
@@ -185,7 +186,7 @@ export default function List() {
             <Box sx={{ display: 'flex', alignContent: 'center' }}>
               <Typography mr={3} sx={{ display: 'inline-block', ml: 1 }}>
                 <SearchIcon />
-                著者名　で検索
+                著作者名
               </Typography>
               <TextField
                 autoComplete="off"
@@ -198,7 +199,7 @@ export default function List() {
             <Box sx={{ display: 'flex', alignContent: 'center' }}>
               <Typography mr={3} sx={{ display: 'inline-block', ml: 1 }}>
                 <SearchIcon />
-                投稿者名で検索
+                投稿者名
               </Typography>
               <TextField
                 autoComplete="off"
@@ -230,11 +231,26 @@ export default function List() {
             </Box>
           </Grid>
           <Grid item>
-            <Link href="./create/">
-              <Button variant="contained" size="large" color="info" sx={{ my: 2 }}>
-                投稿する
-              </Button>
-            </Link>
+            <Box
+              sx={{
+                position: 'fixed',
+                bottom: '10px',
+                right: '40px',
+                zIndex: 9999,
+                opacity: 0.7,
+
+                '@media (min-width: 768px)': {
+                  position: 'static',
+                  opacity: 1.0,
+                },
+              }}
+            >
+              <Link href="./create/">
+                <Button variant="contained" size="large" color="info" sx={{ my: 2 }}>
+                  <CreateIcon />
+                </Button>
+              </Link>
+            </Box>
           </Grid>
         </Grid>
 
@@ -251,7 +267,12 @@ export default function List() {
                   >
                     <Box sx={{ display: 'inline-flex', alignContent: 'center' }}>
                       <Avatar alt="" src={book.userPhotoURL} />
-                      <Typography fontSize={25}>{book.userName}</Typography>
+                      <Typography
+                        fontSize={25}
+                        sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                      >
+                        {book.userName}
+                      </Typography>
                     </Box>
                     <Box
                       sx={{ position: 'relative', paddingTop: '100%', overflow: 'hidden', mb: 3 }}
@@ -271,8 +292,16 @@ export default function List() {
                         />
                       )}
                     </Box>
-                    <Typography>タイトル：「{book.title}」</Typography>
-                    <Typography>著者 ：「{book.author}」</Typography>
+                    <Typography
+                      sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                    >
+                      タイトル：「{book.title}」
+                    </Typography>
+                    <Typography
+                      sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                    >
+                      著者 ：「{book.author}」
+                    </Typography>
                     <Box
                       sx={{
                         display: 'flex',
@@ -293,7 +322,7 @@ export default function List() {
                         <Typography ml={1}>{book.likeCount}</Typography>
                       </Box>
 
-                      <Typography>
+                      <Typography variant="caption">
                         {book.createdAt && book.createdAt.toDate().toLocaleString()}
                       </Typography>
                     </Box>

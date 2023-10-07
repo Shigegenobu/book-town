@@ -174,7 +174,7 @@ export default function Create() {
             </Grid>
             <Grid item>
               <Button variant="contained" size="large" color="info" onClick={handleClick}>
-                投稿
+                投稿する
               </Button>
             </Grid>
           </Grid>
