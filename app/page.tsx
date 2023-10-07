@@ -9,16 +9,6 @@ export default function Home() {
     <>
       <Container>
         <Grid container justifyContent="right" spacing={2} mt={2}>
-          {/* <Grid item>
-            <Typography
-              variant="h3"
-              fontStyle="italic"
-              color="green"
-              sx={{ whiteSpace: 'nowrap', textAlign: 'center' }}
-            >
-              📖BOOK-TOWN📖
-            </Typography>
-          </Grid> */}
           <Grid item>
             <Link href="./signin/">
               <Button size="large" variant="contained" color="success" sx={{ mr: 2, mb: 3 }}>
@@ -80,10 +70,10 @@ export default function Home() {
               <Box component="span" fontStyle="italic" color="green" fontWeight="bold">
                 BOOK-TOWN
               </Box>
-              」は本を読んでみたいけれど何を読んだらいいか分からないという方や、これまで読んだことのないジャンルのおすすめを知りたいという方々の悩みを解決するアプリです。
+              」は自分のおすすめの本を投稿したり、他人が投稿したおすすめの本を閲覧できるアプリです。
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ my: 2 }}>
-              豊富な書籍情報とユーザーの評価を活用して、個々の興味や嗜好に合った本の提案を行います。さらに他のユーザーがどのような本を読んでいるのかを知ることで、新たな読書のアイデアを得ることができます。未知の世界や新しい知識への探求心を満たすための一歩を、
+              他人のおすすめした本を見ることで、新しいジャンルや分野に興味を持つことができ、知識や読書の幅が広がります。本を読みたいけれど、何を読んだらいいか分からない方や、これまで読んだことのないジャンルのおすすめを知りたい方々の悩みを解決するツールとなっています。未知の世界や新しい知識への探求心を満たすための一歩を、
               <Box component="span" fontStyle="italic" color="green" fontWeight="bold">
                 BOOK-TOWN
               </Box>
