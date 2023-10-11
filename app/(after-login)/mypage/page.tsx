@@ -325,7 +325,15 @@ export default function Mypage() {
                 <Typography sx={{ fontWeight: 'bold' }}>アバター画像の変更</Typography>
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center' }}>
                   <Box>
-                    <Button variant="contained" sx={{ maxWidth: '50%', mb: 3, mr: 2 }}>
+                    <Button
+                      variant="contained"
+                      sx={{
+                        maxWidth: '50%',
+                        mb: 3,
+                        mr: 2,
+                        overflow: 'auto',
+                      }}
+                    >
                       <input
                         type="file"
                         accept=".png, .jpeg, .jpg"

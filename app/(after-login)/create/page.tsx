@@ -202,8 +202,21 @@ export default function Create() {
                 </Button>
               </Box>
             </Grid>
-            <Grid item sm={8}>
-              <Stack spacing={10} sx={{ width: '100%' }}>
+            <Grid
+              item
+              sm={8}
+              sx={{
+                '@media (max-width: 425px)': {
+                  width: '100%',
+                },
+              }}
+            >
+              <Stack
+                spacing={10}
+                sx={{
+                  width: '100%',
+                }}
+              >
                 <TextField
                   label="タイトルを入力して下さい"
                   variant="standard"
