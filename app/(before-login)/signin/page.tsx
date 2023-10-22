@@ -1,6 +1,6 @@
 'use client';
 import { auth } from '@/app/service/firebase';
-import { Box, Button, Container, Grid, TextField } from '@mui/material';
+import { Box, Button, Container, Grid, TextField, Typography } from '@mui/material';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -68,6 +68,33 @@ export default function SignIn() {
             </Grid>
           </Grid>
         </form>
+
+        <Typography sx={{ mt: 10 }} variant="h6">
+          テストユーザー
+        </Typography>
+        <Box
+          border={1}
+          borderRadius={3}
+          p={2}
+          mt={1}
+          sx={{
+            backgroundColor: '#f0f4c3',
+            '@media (min-width: 768px)': {
+              width: '30%',
+            },
+          }}
+        >
+          <Grid container justifyContent="flex-start" spacing={3}>
+            <Grid item>
+              <Box>メールアドレス</Box>
+              <Box>test@gmail.com</Box>
+            </Grid>
+            <Grid item>
+              <Box>パスワード</Box>
+              <Box>123456</Box>
+            </Grid>
+          </Grid>
+        </Box>
       </Container>
     </>
   );
